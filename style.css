@@ -96,18 +96,25 @@
     color: var(--borderLight);
     background-color: var(--borderDark);
   }
-  a {
-    color: #457A47;
+  a:link {
+    color: rgba(24,98,48,0.8);
     font-weight: 500;
     text-decoration: none;
     border-bottom: 1px dotted rgba(68,106,83,0.4);
     transition: color 0.2s ease, border-color 0.2s ease;
   }
+  a:visited {
+    color: #355437;
+  }
   a:hover, a:focus {
-  color: #22b2b2; /* “attack red” */
-  text-shadow: 0 0 4px rgba(34,178,78,0.4);
-  border-bottom-color: transparent;
-
+    color: #22b2b2;
+    text-shadow: 0 0 4px rgba(34,178,78,0.4);
+    border-bottom-color: transparent;
+  }
+  a:active {
+    color: #b22222; /* “attack red” */
+    text-shadow: 0 0 4px rgba(178,34,34,0.4);
+    border-bottom-color: transparent;
   }
   .swatch { 
     width: 100%; 
@@ -157,6 +164,9 @@
     background-repeat: no-repeat; 
     background-attachment: fixed;
   }
+  details {
+    cursor:pointer
+  }
   .image-container {
     padding: 0rem;
     text-align: center;
@@ -188,8 +198,8 @@
     font-size: clamp(5px, 4vw, 18px);
     line-height: 125%;
     background-color: #000; 
-    background-image: radial-gradient(circle at 75% 100%, #78766f, #000 125%);
-    border: 1px solid var(--borderLight); 
+    background-image: radial-gradient(circle at 70% 85%, #78766f, #000 115%);
+    border: 2px solid transparent; 
     border-radius: 10px; 
     padding: 40px 20px 20px 15px; 
     overflow: auto; 
@@ -250,7 +260,7 @@
     font-size: clamp(5px, 4vw, 18px);
   }
   .code tr:hover td { 
-    background: #f0ebde33; 
+    background: #f0ebde09; 
   }
   .code strong {
     font-weight: lighter;
@@ -452,6 +462,10 @@
     scroll-margin-top: 100px; 
   }
 
+
+
+
+
 /* === Image Comparison Slider === */
   .image-compare {
     --splitter-color: hotpink;
@@ -459,6 +473,7 @@
     --expand: 0.875rem;
     --handle-size: calc(var(--expand) + var(--splitter-size));
     position: relative;
+    cursor:pointer;
   }
   .image-compare span {
     display: block;
@@ -584,14 +599,15 @@
     width: 160px;
   }
   .sandbox-btn {
-    border: 1px solid #f8f5ef;
-    background: linear-gradient(185deg, #629c6799, #629c67);
+    border: 1px solid #629c6702;
+    background-image: radial-gradient(circle at 75% 20%, #629c6799, #629c67 145%);
     border-radius: 10px;
     padding: 8px 12px;
     cursor: pointer;
   }
   .sandbox-btn:hover {
-    background: linear-gradient(185deg, #629c67, #355437);
+    border: 1px solid #629c6701;
+    background-image: radial-gradient(circle at 75% 20%, #629c67, #355437 145%);
     color: #f8f5ef;
   }
   .sandbox-swatch {
@@ -622,7 +638,7 @@
     font-size: clamp(5px, 3.8vw, 16px);
   }
   .sandbox-table tr:hover td { 
-    background: #f0ebde33; 
+    background: #629c6711; 
   }
   .sandbox-table .swatch {
     width: 64px; 
