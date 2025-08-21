@@ -12,7 +12,7 @@ design:
 
 <head>
   <meta charset="utf-8" />
-  <title>RGB Hex → CMYK (ICC) — Step-by-step guide</title>
+  <title>How to convert sRGB hex → CMYK</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -69,10 +69,13 @@ design:
         <p>In 2015, the internet argued nonstop about “<strong>the dress</strong>.” Some people saw white and gold, others swore it was blue and black. Both were right in a way—the photo was ambiguous, and our brains made different guesses about the lighting. It was a viral reminder that color lives in the eye of the beholder.</p>
         <div class="grid">
           <div class="image-container">
-            <img src="images/thedress.gif" width="100%" alt="Image of 'the dress'">
+            <img src="images/thedress.jpg" width="100%" height="auto" alt="Image of 'the dress'">
           </div>
           <div class="callout">
-            <p><em>Why this matters:</em> If color can shift depending on light, surroundings, and even who’s looking, then converting from one system (like screens) to another (like print) is never straightforward. That’s why we need all the steps you’re about to see.</p>
+            <p><em>Why this matters:</em> If color can shift depending on light, surroundings, and even who’s looking, then converting from one system (like screens) to another (like print) is never straightforward. That’s why we need all the steps you’re about to see. 
+            <br><br>
+            In practice, you don’t usually sit down with a calculator to work through gamma curves and Lab values yourself—your design software and printer drivers handle all of that automatically. What this guide shows is the chain of conversions happening behind the curtain. Understanding it helps you know <em>why</em> colors sometimes look different when you move between screen and print, and what’s really going on when you pick a rendering intent or adjust your export settings.</p>
+
           </div>
         </div>
 
@@ -153,8 +156,8 @@ design:
         </div>
         <h3>Why they matter in print vs. screen</h3>
         <ul>
-          <li><strong>Screens</strong> (sRGB, Rec.709, most monitors) are built around D65 — a cool daylight white point.</li>
-          <li><strong>Printing</strong> (especially in North America and Europe) usually uses D50 for color matching — a warmer daylight white point that matches industry-standard viewing booths for printed proofs.</li>
+          <li><strong>Screens</strong> (sRGB, Rec.709, most monitors) are built around D65—a cool daylight white point.</li>
+          <li><strong>Printing</strong> (especially in North America and Europe) usually uses D50 for color matching—a warmer daylight white point that matches industry-standard viewing booths for printed proofs.</li>
         </ul>
         <p>This means if you convert a color without adjusting from D65 to D50, the print can look “off” because the definition of “white” shifted. This adjustment step is called <strong>chromatic adaptation</strong>.</p>
       </section>
@@ -175,8 +178,8 @@ design:
             </ul>
           </div>
           <div>
-            <h3>Why RGB stops at 255</h3>
-            <p>Each RGB channel in an image file gets <strong>8 bits</strong>. That’s 256 possible values for how bright that color is—from 0 (none) to 255 (OMG, my eyes!). It’s perfect for storing in one byte, which computers love.</p>
+            <h3>Why sRGB stops at 255</h3>
+            <p>Each sRGB channel in an image file gets <strong>8 bits</strong>. That’s 256 possible values for how bright that color is—from 0 (none) to 255 (OMG, my eyes!). It’s perfect for storing in one byte, which computers love.</p>
             <ul>
               <li>Red: 0–255</li>
               <li>Green: 0–255</li>
@@ -187,8 +190,29 @@ design:
 
         <h3>How this ties to hex codes</h3>
         <p>Web colors like <code>#629C67</code> are just those 0–255 numbers written in <strong>hexadecimal</strong> (base-16). In hex, 0–255 becomes 00–FF. So <code>#629C67</code> is just three hidden numbers: the amounts of <em>red</em>, <em>green</em>, and <em>blue</em> light your screen mixes.</p>
-        <div class="tip"><strong>Fun fact:</strong> 8-bit per channel RGB = 24-bit color (8+8+8), giving you 16,777,216 possible colors.</div>
-        <p>Next, we normalize the RGB values so that they fall within a range of 0 to 1 by dividing each value by 255 (the maximum possible RGB value). This step is necessary for the math to work correctly.</p>
+        <div class="tip">
+          <details>
+            <summary>
+              <strong>Sidebar: RGB vs. sRGB</strong>
+            </summary>
+            <p>
+              When you see a hex code like &#x1F7E7; <code>#FF8800</code>, it isn’t just “RGB” in the abstract, it’s <strong>sRGB</strong>.
+            </p>
+            <ul>
+              <li>
+                <strong>RGB</strong> is a broad idea: any system that mixes red, green, and blue light to describe color. But without a standard, each screen or file could interpret those numbers differently.
+              </li>
+              <li>
+                <strong>sRGB</strong> is that standard. It defines exactly which red, green, and blue primaries to use, what “white” looks like (D65), and how brightness is mapped (the gamma curve). Because it’s consistent, it became the default for the web, most design software, and the majority of monitors.
+              </li>
+            </ul>
+            <p>
+              So in this guide, whenever we start from a hex code, we’re really starting from <strong>sRGB</strong> values—which we then convert step by step into linear RGB, XYZ, Lab, and finally CMYK.
+            </p>
+            <strong>Fun fact:</strong> 8-bit per channel RGB = 24-bit color (8+8+8), giving you 16,777,216 possible colors.
+          </details>
+        </div>
+        <p>Next, we normalize the sRGB values so that they fall within a range of 0 to 1 by dividing each value by 255 (the maximum possible sRGB value). This step is necessary for the math to work correctly.</p>
 
       </section>
 
@@ -210,7 +234,7 @@ design:
 
         <hr>
 
-        <p><strong>Now we normalize.</strong><br> RGB values in base-10 go from 0 to 255, but working with “out of 255” numbers is clunky for math.<br> So we <strong>normalize</strong>—divide each value by 255 to scale them to a range of 0 to 1:</p>
+        <p><strong>Now we normalize.</strong><br> sRGB values in base-10 go from 0 to 255, but working with “out of 255” numbers is clunky for math.<br> So we <strong>normalize</strong>—divide each value by 255 to scale them to a range of 0 to 1:</p>
 
         <div class="code code-table-wrap">
           <div class="code-type animate">
@@ -250,13 +274,13 @@ design:
 
         <p>Once we have 0–1 values, we can do the color conversions with cleaner math and percentages that make sense.
         </p>
-        <div class="tip"><em>tldr;</em> Hex is just 8‑bit sRGB per channel. We normalize to 0–1 to do math.</div>
+        <div class="tip"><em>tldr;</em> Hex is base-16 (8‑bit sRGB per channel). So we first convert to base-10 and then normalize to 0–1 to do math.</div>
       </section>
 
       <section>
         <h2>Power-up: gamma decode to linear mode</h2>
 
-        <p>Next, we need to change our RGB values to work <em>irl</em>. Right now, sRGB keeps them in a <strong>non-linear</strong> curve (gamma ≈ 2.2) to make colors look good to human eyes. But the math for converting to CMYK needs <strong>linear</strong> values—where the brightness matches the actual light energy. This step “straightens out” the curve, a process called <strong>linearizing</strong>.</p>
+        <p>Next, we need to change our sRGB values to work <em>irl</em>. Right now, sRGB keeps them in a <strong>non-linear</strong> curve (gamma ≈ 2.2) to make colors look good to human eyes. But the math for converting to CMYK needs <strong>linear</strong> values—where the brightness matches the actual light energy. This step “straightens out” the curve, a process called <strong>linearizing</strong>.</p>
         <div class="grid callout">
           <div>
             <h3>Why sRGB isn’t linear</h3>
@@ -336,7 +360,7 @@ design:
         <div class="code">
             <div class="code-type animate">If <code>c</code> ≤ 0.04045 → <code>c<sub>lin</sub> = c / 12.92</code></div>
             <div class="code-type animate">Else → <code>c<sub>lin</sub> = ((c + 0.055) / 1.055)<sup>2.4</sup></code></div>
-            <div class="code-type animate">→ Linear sRGB for our color = (0.122139, 0.332452, 0.135633)<span class="cursor animate">_</span></div>
+            <div class="code-type animate">→ Linear RGB for our color = (0.122139, 0.332452, 0.135633)<span class="cursor animate">_</span></div>
           
         </div>
 
@@ -345,9 +369,9 @@ design:
       </section>
 
       <section>
-        <h2>Unlocking the world map: Linear sRGB → XYZ (D65)</h2>
+        <h2>Unlocking the world map: Linear RGB → XYZ (D65)</h2>
 
-        <p>Think of <strong>XYZ</strong> as the world map in our color color conversion quest—every land (monitor, printer, camera) is charted here. But our sRGB colors only know how to read their own local map. To find their exact “You Are Here” marker on the universal map, we translate their coordinates by multiplying our linear sRGB values by a fixed 3×3 matrix, built from the sRGB <em>primaries</em> (its red/green/blue chromaticities) and its <em>white point</em> (D65).</p>
+        <p>Think of <strong>XYZ</strong> as the world map in our color color conversion quest—every land (monitor, printer, camera) is charted here. But our RGB colors only know how to read their own local map. To find their exact “You Are Here” marker on the universal map, we translate their coordinates by multiplying our linear RGB values by a fixed 3×3 matrix, built from the RGB <em>primaries</em> (its red/green/blue chromaticities) and its <em>white point</em> (D65).</p>
 
 
         <div class="callout">
@@ -357,7 +381,7 @@ design:
           </div>
           <div>
             <h3>What we’re doing here</h3>
-            <p>Treat the linear sRGB values as a column vector and multiply by the sRGB→XYZ matrix (for D65). The result is XYZ under the same D65 white point (we’ll adapt to D50 in the next step).</p>
+            <p>Treat the linear RGB values as a column vector and multiply by the RGB→XYZ matrix (for D65). The result is XYZ under the same D65 white point (we’ll adapt to D50 in the next step).</p>
           </div>
         </div>
         <div class="tip">
@@ -365,10 +389,10 @@ design:
             <summary><strong>Where does this matrix come from?</strong></summary>
             <div class="grid">
               <div>
-                It’s derived from the official sRGB <em>primaries</em> (their CIE x,y chromaticities) and the <strong>D65</strong> white point. The matrix is solved so that the sRGB primaries map to the correct XYZ locations and a neutral gray (R=G=B) maps to the D65 white. <strong>Y</strong> is relative luminance, so in your result <code>Y = 0.273518</code> represents the color’s brightness on a 0–1 scale.
+                It’s derived from the official RGB <em>primaries</em> (their CIE x,y chromaticities) and the <strong>D65</strong> white point. The matrix is solved so that the RGB primaries map to the correct XYZ locations and a neutral gray (R=G=B) maps to the D65 white. <strong>Y</strong> is relative luminance, so in your result <code>Y = 0.273518</code> represents the color’s brightness on a 0–1 scale.
               </div>
               <div>
-                <strong>Standard sRGB→XYZ (D65) matrix</strong>
+                <strong>Standard RGB→XYZ (D65) matrix</strong>
                 <div style="margin-top:8px;">
                   <code>
           M = ⎡ 0.4124564&nbsp;&nbsp;0.3575761&nbsp;&nbsp;0.1804375 ⎤<br>
@@ -376,7 +400,7 @@ design:
           &nbsp;&nbsp;&nbsp;&nbsp;⎣ 0.0193339&nbsp;&nbsp;0.1191920&nbsp;&nbsp;0.9503041 ⎦
         </code>
                   <p style="margin:6px 0 0; color: var(--muted); font-size: 0.8em;">
-                    Notice how the middle row (Y) weights green most heavily (≈0.715) — that reflects human sensitivity
+                    Notice how the middle row (Y) weights green most heavily (≈0.715)—that reflects human sensitivity
                     to green in luminance.
                   </p>
                 </div>
@@ -394,7 +418,7 @@ design:
           <div class="code-type animate">→ XYZ(D65) = (0.193727, 0.273518, 0.170880)/div><span class="cursor animate">_</span>
           </div>
         </div>
-        <div class="tip"><em>tldr;</em> XYZ is a device‑independent space. The sRGB→XYZ matrix (D65) is defined by the sRGB primaries.</div>
+        <div class="tip"><em>tldr;</em> XYZ is a device‑independent space. The RGB→XYZ matrix (D65) is defined by the RGB primaries.</div>
       </section>
 
       <section>
@@ -702,8 +726,38 @@ design:
         </div>
       </section>
 
+      <section id="additional-resources">
+        <h2>Additional Resources</h2>
+
+        <p class="muted">Further reading and tools for going deeper into color management, profiles, and conversions.</p>
+
+        <h3>Practical References</h3>
+        <ul>
+          <li><a href="http://www.brucelindbloom.com/" rel="noopener" target="_blank">Bruce Lindbloom’s Color Math</a>—formulas and calculators for RGB ⇄ XYZ ⇄ Lab.</li>
+          <li><a href="https://www.color.org/index.xalter" rel="noopener" target="_blank">ICC / color.org resources</a>—official tools, profile info, and reference materials.</li>
+        </ul>
+
+        <h3>Standards & Specs</h3>
+        <ul>
+          <li><a href="https://www.color.org/chardata/rgb/srgb.xalter" rel="noopener" target="_blank">sRGB specification (IEC 61966-2-1)</a>—primaries, white point (D65), transfer curve.</li>
+          <li><a href="https://www.color.org/specification/ICC1v43_2010-12.pdf" rel="noopener" target="_blank">ICC Profile Specification (v4.3 PDF)</a>—how device-independent color is defined.</li>
+          <li><a href="https://www.iso.org/standard/67279.html" rel="noopener" target="_blank">ISO 12647 (printing process control)</a>—CMYK conditions, tone value increase, etc.</li>
+        </ul>
+
+        <h3>Learning & Deep Dives</h3>
+        <ul>
+          <li><a href="https://www.rit.edu/cos/colorscience/re_rgb_spaces.php" rel="noopener" target="_blank">A Review of RGB Color Spaces (Munsell Color Science Lab)</a>—how sRGB compares with Adobe RGB, Display P3, etc.</li>
+          <li><a href="https://littlecms.com/" rel="noopener" target="_blank">LittleCMS</a>—open-source color management engine used in many apps.</li>
+          <li><a href="https://colourware.org/" rel="noopener" target="_blank">Stephen Westland’s Colourware blog</a>—short, applied posts on color vision, color management, and perception.</li>
+          <li><em>Universal Principles of Color</em> by Stephen Westland—an illustrated, plain-language tour of core color concepts and how to use them in practice.</li>
+          <li><em>Real World Color Management</em> by Bruce Fraser, Chris Murphy, and Fred Bunting—practical bridge between theory and production.</li>
+          <li><em>Color Science</em> by Wyszecki &amp; Stiles—comprehensive reference text.</li>
+        </ul>
+      </section>
+
+
       <footer class="sub" style="padding:20px; text-align:left;">
-        <span style="background-color: #ffffff33; padding: 10px; border-radius: 4px;">© 2025 – RGB→CMYK guide by Chris Yasuda Drysdale</span>
+        <span class="glass">© 2025 – RGB→CMYK guide by Chris Yasuda Drysdale</span>
       </footer>
 
     </main>

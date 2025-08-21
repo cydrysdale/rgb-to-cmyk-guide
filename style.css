@@ -96,6 +96,19 @@
     color: var(--borderLight);
     background-color: var(--borderDark);
   }
+  a {
+    color: #457A47;
+    font-weight: 500;
+    text-decoration: none;
+    border-bottom: 1px dotted rgba(68,106,83,0.4);
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+  a:hover, a:focus {
+  color: #22b2b2; /* “attack red” */
+  text-shadow: 0 0 4px rgba(34,178,78,0.4);
+  border-bottom-color: transparent;
+
+  }
   .swatch { 
     width: 100%; 
     height: 56px; 
@@ -154,10 +167,16 @@
   }
   .image-container img {
     width: 100%;
-    height: auto;
+    height: 100%;
     display: inline-block;
+    object-fit: contain;
   }
-  
+  .glass {
+    background-image: radial-gradient(circle at 55% 250%, #fff, transparent 125%); 
+    padding: 10px; 
+    border-radius: 4px;
+    backdrop-filter: blur(12px);
+  }
   
 
 
@@ -169,7 +188,7 @@
     font-size: clamp(5px, 4vw, 18px);
     line-height: 125%;
     background-color: #000; 
-    background-image: radial-gradient(#78766f, #000 125%);
+    background-image: radial-gradient(circle at 75% 100%, #78766f, #000 125%);
     border: 1px solid var(--borderLight); 
     border-radius: 10px; 
     padding: 40px 20px 20px 15px; 
@@ -615,6 +634,7 @@
     color: var(--muted); 
     font-size: 0.95em; 
   }
+  
 
 
 
