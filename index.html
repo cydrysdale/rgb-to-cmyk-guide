@@ -1,0 +1,717 @@
+<!--
+writing:
+* jRPG to TTRPG metaphor
+
+design:
+* sprites for health bars, etc.
+* graphic showing swatch under D65 and D50 light on either side
+-->
+
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <title>RGB Hex → CMYK (ICC) — Step-by-step guide</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+  <header>
+    <div class="header-inner">
+      <div class="title-block">
+        <h1>How to convert sRGB hex → CMYK</h1>
+        <div class="sub">Practical math to satisfy your inner-production designer</div>
+      </div>
+
+      <!-- Nav toggle sits to the right -->
+      <div class="toc-mobile">
+        <button id="tocToggle" aria-expanded="false" aria-controls="tocList">☰ Inventory</button>
+        <nav id="tocList" class="toc" aria-label="On this page"></nav>
+      </div>
+    </div>
+  </header>
+
+  <div class="page">
+    <aside class="toc-desktop">
+      <nav class="toc" aria-label="On this page"></nav>
+    </aside>
+    <main>
+      <section>
+        <h2>Why color isn’t as simple as it looks</h2>
+        <p>Here’s the thing about color: it’s not absolute. It’s part physics, part biology, and part psychology. That means what we see isn’t always what’s “really there.”</p>
+
+        <div class="grid">
+          <div>
+            <h3>Color is contextual</h3>
+            <p>The same light mix can look totally different depending on what’s around it. Take <strong>orange vs. brown</strong>—they can be the exact same wavelengths. Give it a dark background or put it next to vivid colors, and it feels orange. With a light background or set against pale tones, and suddenly it’s brown. Context is everything.</p>
+          </div>
+          <!--Image Comparison Slider-->
+          <div>
+            <figure dir="rtl">
+              <p class="image-compare" role="img" tabindex="0"
+                aria-label="When comparing the photos, it becomes noticable that the black-and-white image lacks color."
+                aria-description="This image is actually a set of two images, and when the set is focused, the two contained images are alternated between.">
+                <span>
+                  <img src="images/orange-vs-brown-dark.png">
+                </span class="image-container">
+                <img src="images/orange-vs-brown-light.png">
+              </p>
+            </figure>
+          </div>
+        </div>
+        <h3>Color is subjective</h3>
+        <p>In 2015, the internet argued nonstop about “<strong>the dress</strong>.” Some people saw white and gold, others swore it was blue and black. Both were right in a way—the photo was ambiguous, and our brains made different guesses about the lighting. It was a viral reminder that color lives in the eye of the beholder.</p>
+        <div class="grid">
+          <div class="image-container">
+            <img src="images/thedress.gif" width="100%" alt="Image of 'the dress'">
+          </div>
+          <div class="callout">
+            <p><em>Why this matters:</em> If color can shift depending on light, surroundings, and even who’s looking, then converting from one system (like screens) to another (like print) is never straightforward. That’s why we need all the steps you’re about to see.</p>
+          </div>
+        </div>
+
+      </section>
+
+
+      <section>
+        <h2>RGB unplugged: the quest to CMYK</h2>
+        <p>On your screen, colors live in <strong>sRGB</strong>—they’re made from mixing red, green, and blue light. On paper, colors live in <strong>CMYK</strong>—they’re made from mixing cyan, magenta, yellow, and black pigments. Because light and pigment behave differently, we need to convert them so what you see on screen matches what comes out in print.</p>
+        <div class="grid">
+          <div class="image-container">
+            <img src="images/colorspacecomparison.png" alt="color space comparison image">
+          </div>
+          <div>
+            <h3>Worked example color</h3>
+            <div class="swatch"></div>
+            <p><span class="pill">#629C67</span></p>
+            <table>
+              <tr>
+                <th>Hex</th>
+                <td>#629C67</td>
+              </tr>
+              <tr>
+                <th>sRGB 8‑bit</th>
+                <td>(98, 156, 103)</td>
+              </tr>
+              <tr>
+                <th>sRGB 0–1</th>
+                <td>(0.384314, 0.611765, 0.403922)</td>
+              </tr>
+            </table>
+          </div>
+          <div>
+            <div class="callout">
+              <h3>Why this process?</h3>
+              <p>Digital colors live in <strong>sRGB</strong> (gamma‑encoded, <strong>D65</strong> white). Press profiles expect <strong>D50</strong> and define pigment behavior via <strong>ICC LUTs</strong> (tone curves, GCR/UCR, total pigment).</br> To get reliable CMYK, we <em>decode gamma → linear</em>, convert to <em>XYZ</em>, adapt <em>D65→D50</em>, go to <em>Lab</em> (perceptual), then apply the press <em>ICC</em>.</p>
+            </div>
+          </div>
+          <!--Image Comparison Slider-->
+          <div>
+            <figure dir="rtl">
+              <p class="image-compare" role="img" tabindex="0"
+                aria-label="When comparing the photos, it becomes noticable that the black-and-white image lacks color."
+                aria-description="This image is actually a set of two images, and when the set is focused, the two contained images are alternated between.">
+                <span>
+                  <img src="images/RGB-color-mix.png">
+                </span class="image-container">
+                <img src="images/CMYK-color-mix.png">
+              </p>
+            </figure>
+          </div>
+
+        </div>
+      </section>
+
+      <section>
+        <h2>WTF is D50? I thought we were doing color conversion, not playing DnD</h2>
+
+        <p>Don’t worry—no dice rolls required. <strong>D50</strong> and <strong>D65</strong> are just standardized <strong>“types” of daylight</strong> that get used in color work so everyone talks about light the same way. When you look at a color, it's always under some kind of light. That light’s color is called the white point—basically, <em>whatever we decided is pure white here</em>. D50 and D65 are two official daylight white points from the CIE (the group that standardizes color science).</p>
+        <div class="grid callout">
+          <div>
+            <h3>The “D” means daylight</h3>
+            <p>The <strong>D-series illuminants</strong> are mathematical models of natural daylight at different times of day and sky conditions.</p>
+            <ul>
+              <li><strong>D50</strong> → midday light, slightly warm (more yellow/red)</li>
+              <li><strong>D65</strong> → midday light, slightly cool (more blue)</li>
+            </ul>
+          </div>
+          <div>
+            <h3>The number is the color temperature</h3>
+            <p>The “50” in D50 means <strong>5000 K</strong> (Kelvin), the “65” in D65 means <strong>6500 K.</strong>
+            </p>
+            <ul>
+              <li>Lower Kelvin → warmer, yellower light (like late afternoon sun)</li>
+              <li>Higher Kelvin → cooler, bluer light (like late morning sky)</li>
+            </ul>
+          </div>
+        </div>
+        <h3>Why they matter in print vs. screen</h3>
+        <ul>
+          <li><strong>Screens</strong> (sRGB, Rec.709, most monitors) are built around D65 — a cool daylight white point.</li>
+          <li><strong>Printing</strong> (especially in North America and Europe) usually uses D50 for color matching — a warmer daylight white point that matches industry-standard viewing booths for printed proofs.</li>
+        </ul>
+        <p>This means if you convert a color without adjusting from D65 to D50, the print can look “off” because the definition of “white” shifted. This adjustment step is called <strong>chromatic adaptation</strong>.</p>
+      </section>
+
+      <section>
+        <h2>8-Bit: not just old-school Nintendo graphics</h2>
+
+        <p>The same “8-bit” you’ve heard in gaming also runs your colors—<strong>8-bit</strong> is how computers store each color channel (red, green, and blue) to display on your screen. It’s the reason RGB values range from 0 to 255. Let’s break it down.</p>
+
+        <div class="grid callout">
+          <div>
+            <h3>Bits are tiny data switches</h3>
+            <p>A <strong>bit</strong> is the smallest piece of computer data—it can be <code>0</code> (off) or <code>1</code> (on). String more bits together, and you can represent bigger numbers:</p>
+            <ul>
+              <li>1 bit → 2 values (0, 1)</li>
+              <li>2 bits → 4 values (00, 01, 10, 11)</li>
+              <li>8 bits → 256 values (00000000 to 11111111)</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Why RGB stops at 255</h3>
+            <p>Each RGB channel in an image file gets <strong>8 bits</strong>. That’s 256 possible values for how bright that color is—from 0 (none) to 255 (OMG, my eyes!). It’s perfect for storing in one byte, which computers love.</p>
+            <ul>
+              <li>Red: 0–255</li>
+              <li>Green: 0–255</li>
+              <li>Blue: 0–255</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>How this ties to hex codes</h3>
+        <p>Web colors like <code>#629C67</code> are just those 0–255 numbers written in <strong>hexadecimal</strong> (base-16). In hex, 0–255 becomes 00–FF. So <code>#629C67</code> is just three hidden numbers: the amounts of <em>red</em>, <em>green</em>, and <em>blue</em> light your screen mixes.</p>
+        <div class="tip"><strong>Fun fact:</strong> 8-bit per channel RGB = 24-bit color (8+8+8), giving you 16,777,216 possible colors.</div>
+        <p>Next, we normalize the RGB values so that they fall within a range of 0 to 1 by dividing each value by 255 (the maximum possible RGB value). This step is necessary for the math to work correctly.</p>
+
+      </section>
+
+      <section>
+        <h2>Decoding the Hex and Normalizing for Math</h2>
+
+        <p><strong>First, let’s decode the hex.</strong><br> Our hex color is written in <strong>base-16</strong> (hexadecimal), which uses 16 symbols: <br>
+          <code>0 1 2 3 4 5 6 7 8 9 A B C D E F</code>.<br>
+          <strong>A</strong> means <strong>10</strong>, <strong>B</strong> means <strong>11</strong>, and so on, up to <strong>F</strong> which means <strong>15</strong>.</p>
+
+        <p>When we see a hex code like <code>#629C67</code>, we break it into three pairs:</p>
+        <ul>
+          <li><strong>62</strong> (hex) → <strong>98</strong> (base-10) = <strong>Red</strong></li>
+          <li><strong>9C</strong> (hex) → <strong>156</strong> (base-10) = <strong>Green</strong></li>
+          <li><strong>67</strong> (hex) → <strong>103</strong> (base-10) = <strong>Blue</strong></li>
+        </ul>
+
+        <p><strong>Base-10</strong>, by the way, is the everyday number system we use, built on 10 symbols (0–9) where each place is worth a power of 10.</p>
+
+        <hr>
+
+        <p><strong>Now we normalize.</strong><br> RGB values in base-10 go from 0 to 255, but working with “out of 255” numbers is clunky for math.<br> So we <strong>normalize</strong>—divide each value by 255 to scale them to a range of 0 to 1:</p>
+
+        <div class="code code-table-wrap">
+          <div class="code-type animate">
+          <strong>Example: #629C67</strong>
+          <table>
+            <thead>
+              <tr>
+                <th>Channel</th>
+                <th>Hex (Base-16)</th>
+                <th>Decimal (Base-10)</th>
+                <th>Normalized (÷ 255)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Red</td>
+                <td>62</td>
+                <td>98</td>
+                <td>0.3843</td>
+              </tr>
+              <tr>
+                <td>Green</td>
+                <td>9C</td>
+                <td>156</td>
+                <td>0.6118</td>
+              </tr>
+              <tr>
+                <td>Blue</td>
+                <td>67</td>
+                <td>103</td>
+                <td>0.4039<span class="cursor animate">_</span></td>
+              </tr>
+            </tbody>
+          </table>
+          </div>
+        </div>
+
+        <p>Once we have 0–1 values, we can do the color conversions with cleaner math and percentages that make sense.
+        </p>
+        <div class="tip"><em>tldr;</em> Hex is just 8‑bit sRGB per channel. We normalize to 0–1 to do math.</div>
+      </section>
+
+      <section>
+        <h2>Power-up: gamma decode to linear mode</h2>
+
+        <p>Next, we need to change our RGB values to work <em>irl</em>. Right now, sRGB keeps them in a <strong>non-linear</strong> curve (gamma ≈ 2.2) to make colors look good to human eyes. But the math for converting to CMYK needs <strong>linear</strong> values—where the brightness matches the actual light energy. This step “straightens out” the curve, a process called <strong>linearizing</strong>.</p>
+        <div class="grid callout">
+          <div>
+            <h3>Why sRGB isn’t linear</h3>
+            <p>Human vision is more sensitive to dark tones than bright ones. sRGB takes advantage of this by <strong>gamma encoding</strong>—compressing the bright end and spreading out the dark end—so images look right on screens and use storage more efficiently.</p>
+          </div>
+          <div>
+            <h3>Why printing needs it linear</h3>
+            <p>In the physical world, light and pigment follow <em>linear</em> rules—if you double the energy, you double the brightness. To get accurate results when converting, we first have to undo the gamma curve so the math reflects real-world light behavior.</p>
+          </div>
+        </div>
+        <p>This formula removes the sRGB gamma curve so the numbers match actual light levels. If the color value is low (<code>c ≤ 0.04045</code>), we divide by <code>12.92</code>. If it’s higher, we adjust using an exponent of <code>2.4</code>. The result is a set of linear RGB values that can be used for accurate color calculations.
+        </p>
+        <div class="grid">
+          <div>
+            <strong>Where do 12.92 and 2.4 come from?</strong> These numbers aren’t random—they’re defined in the official sRGB standard (IEC 61966-2-1):
+            <ul>
+              <li><strong>2.4</strong> → the gamma value that shapes the main curve for mid-to-bright tones, matching how our eyes perceive brightness.</li>
+              <li><strong>12.92</strong> → the slope of the linear “toe” at the darkest values, ensuring a smooth transition into the main curve without a visible jump.</li>
+              <li><strong>0.04045</strong> → the breakpoint where the formula switches from the linear toe to the gamma curve.</li>
+            </ul>
+          </div>
+          <!-- Inline SVG: sRGB decode curve (illustrative, not to scale) -->
+          <div>
+            <svg viewBox="0 0 320 220" width="100%" height="auto" role="img"
+              aria-label="sRGB gamma decode curve with linear toe and breakpoint">
+              <desc>Illustrative sRGB gamma-decode curve showing a linear toe up to the breakpoint at 0.04045 and a gamma 2.4 curve afterward. Axes: x = sRGB value (0–1), y = linear light (0–1).</desc>
+              <!-- Background -->
+              <rect x="0" y="0" width="320" height="220" fill="#f8f5ef00" rx="8" ry="8" />
+              <!-- Axes -->
+              <g stroke="#c0bcb2" stroke-width="1">
+                <line x1="40" y1="180" x2="300" y2="180" /> <!-- x-axis -->
+                <line x1="40" y1="180" x2="40" y2="20" /> <!-- y-axis -->
+              </g>
+              <!-- Axis labels -->
+              <g fill="#484643" font-size="6">
+                <text x="175" y="190" text-anchor="middle">sRGB value (0 → 1)</text>
+                <text x="-100" y="45" transform="rotate(-90 12,24)">linear light (0 → 1)</text>
+                <text x="36" y="188" text-anchor="end">0</text>
+                <text x="36" y="28" text-anchor="end">1</text>
+                <text x="300" y="196" text-anchor="middle">1</text>
+                <text x="40" y="196" text-anchor="middle">0</text>
+              </g>
+              <!-- Breakpoint marker at c=0.04045, clin≈0.00313 (illustrative placement) -->
+              <g>
+                <!-- Vertical guide -->
+                <line x1="72" y1="180" x2="72" y2="40" stroke="#f5c914" stroke-dasharray="4 4" />
+                <!-- Horizontal guide -->
+                <line x1="40" y1="176" x2="300" y2="176" stroke="#f5c914" stroke-dasharray="4 4" />
+                <!-- Point -->
+                <circle cx="72" cy="176" r="3.5" fill="#e88f36" />
+                <text x="76" y="168" font-size="6" fill="#e88f36">breakpoint ≈ 0.04045</text>
+              </g>
+              <!-- Linear toe (slope ≈ 1/12.92) -->
+              <g>
+                <line x1="40" y1="180" x2="72" y2="176" stroke="#1d5080" stroke-width="2.5" />
+                <text x="44" y="164" font-size="6" fill="#1d5080">linear toe (slope ≈ 1/12.92)</text>
+              </g>
+              <!-- Gamma curve (≈2.4) from breakpoint to 1,1 (illustrative Bézier) -->
+              <path d="M72,176 C 120,168 210,120 300,20" fill="none" stroke="#629c67" stroke-width="2.5" />
+              <text x="200" y="86" font-size="6" fill="#267479">gamma curve (exponent ≈ 2.4)</text>
+              <!-- Corner labels -->
+              <text x="300" y="20" font-size="6" fill="#484643" text-anchor="end">→ (1,1)</text>
+              <text x="44" y="192" font-size="6" fill="#484643">(0,0)</text>
+              <!-- Legend -->
+              <g font-size="6">
+                <rect x="52" y="200" width="10" height="2.5" fill="#1d5080" /><text x="68" y="204" fill="#484643">linear toe</text>
+                <rect x="132" y="200" width="10" height="2.5" fill="#629c67" /><text x="148" y="204"
+                  fill="#484643">gamma 2.4</text>
+                <circle cx="220" cy="201" r="3" fill="#e88f36" /><text x="230" y="204" fill="#484643">breakpoint</text>
+              </g>
+              <!-- Note -->
+              <text x="175" y="214" font-size="6" fill="#9aa1a9" text-anchor="middle">illustrative (not to scale)</text>
+            </svg>
+          </div>
+        </div>
+        <p>In short: the gamma curve gives us more precision in shadows, and the linear toe prevents banding at the very darkest levels.</p>
+        <div class="code">
+            <div class="code-type animate">If <code>c</code> ≤ 0.04045 → <code>c<sub>lin</sub> = c / 12.92</code></div>
+            <div class="code-type animate">Else → <code>c<sub>lin</sub> = ((c + 0.055) / 1.055)<sup>2.4</sup></code></div>
+            <div class="code-type animate">→ Linear sRGB for our color = (0.122139, 0.332452, 0.135633)<span class="cursor animate">_</span></div>
+          
+        </div>
+
+        <p>Now, we have “energy-true” RGB values—ready for the next leg of our quest.</p>
+        <div class="tip"><em>tldr;</em> sRGB stores values non‑linearly (roughly gamma ≈ 2.2) to match human vision. Printing physics is linear (energy sums). We must <strong>linearize</strong> before matrix math.</div>
+      </section>
+
+      <section>
+        <h2>Unlocking the world map: Linear sRGB → XYZ (D65)</h2>
+
+        <p>Think of <strong>XYZ</strong> as the world map in our color color conversion quest—every land (monitor, printer, camera) is charted here. But our sRGB colors only know how to read their own local map. To find their exact “You Are Here” marker on the universal map, we translate their coordinates by multiplying our linear sRGB values by a fixed 3×3 matrix, built from the sRGB <em>primaries</em> (its red/green/blue chromaticities) and its <em>white point</em> (D65).</p>
+
+
+        <div class="callout">
+          <div>
+            <h3>What is XYZ?</h3>
+            <p><strong>X, Y, Z</strong> are standardized coordinates that any device can translate to. The key bit: <strong>Y</strong> tracks <em>relative luminance</em> (perceived brightness), while X and Z carry the rest of the color information. Using XYZ gets us out of local sRGB space and into the world at large.</p>
+          </div>
+          <div>
+            <h3>What we’re doing here</h3>
+            <p>Treat the linear sRGB values as a column vector and multiply by the sRGB→XYZ matrix (for D65). The result is XYZ under the same D65 white point (we’ll adapt to D50 in the next step).</p>
+          </div>
+        </div>
+        <div class="tip">
+          <details>
+            <summary><strong>Where does this matrix come from?</strong></summary>
+            <div class="grid">
+              <div>
+                It’s derived from the official sRGB <em>primaries</em> (their CIE x,y chromaticities) and the <strong>D65</strong> white point. The matrix is solved so that the sRGB primaries map to the correct XYZ locations and a neutral gray (R=G=B) maps to the D65 white. <strong>Y</strong> is relative luminance, so in your result <code>Y = 0.273518</code> represents the color’s brightness on a 0–1 scale.
+              </div>
+              <div>
+                <strong>Standard sRGB→XYZ (D65) matrix</strong>
+                <div style="margin-top:8px;">
+                  <code>
+          M = ⎡ 0.4124564&nbsp;&nbsp;0.3575761&nbsp;&nbsp;0.1804375 ⎤<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;⎢ 0.2126729&nbsp;&nbsp;0.7151522&nbsp;&nbsp;0.0721750 ⎥<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;⎣ 0.0193339&nbsp;&nbsp;0.1191920&nbsp;&nbsp;0.9503041 ⎦
+        </code>
+                  <p style="margin:6px 0 0; color: var(--muted); font-size: 0.8em;">
+                    Notice how the middle row (Y) weights green most heavily (≈0.715) — that reflects human sensitivity
+                    to green in luminance.
+                  </p>
+                </div>
+              </div>
+            </div>
+        </div>
+        <div class="code">
+          <div class="code-type animate">[X Y Z]^T = M × [R G B]^T<br></div>
+          <div class="code-type animate">=<br></div>
+          <div class="code-type animate">⎡ (0.4124564 × 0.122139) + (0.3575761 × 0.332452) + (0.1804375 × 0.135633) ⎤<br></div>
+          <div class="code-type animate">⎢ (0.2126729 × 0.122139) + (0.7151522 × 0.332452) + (0.0721750 × 0.135633) ⎥<br></div>
+          <div class="code-type animate">⎣ (0.0193339 × 0.122139) + (0.1191920 × 0.332452) + (0.9503041 × 0.135633) ⎦<br><br></div>
+
+          <!-- Step 4: Final result -->
+          <div class="code-type animate">→ XYZ(D65) = (0.193727, 0.273518, 0.170880)/div><span class="cursor animate">_</span>
+          </div>
+        </div>
+        <div class="tip"><em>tldr;</em> XYZ is a device‑independent space. The sRGB→XYZ matrix (D65) is defined by the sRGB primaries.</div>
+      </section>
+
+      <section>
+        <h2>Crossing Realms: From D65 to D50 (Bradford)</h2>
+
+        <p>Our color is still in the <strong>Cool Daylight Realm (D65)</strong> and needs to travel to the <strong>Warm Sunlight Realm (D50)</strong> where print lives. The <strong>Bradford transform</strong> is our “adaptation spell.” It changes our XYZ coordinates so colors keep their true appearance, even under the warmer sun. We do this by moving into a special “cone-vision space,” scaling each color channel to match the new realm’s white point, then returning to XYZ.</p>
+        <p>Afterward, our color is fully attuned to the Warm Sunlight Realm and ready for the next stage</p>
+        <div class="callout">
+          <h3>What this means on the map</h3>
+          <p>XYZ(D65) pins our color on a map lit by cool daylight. Printing assumes a warmer daylight (D50). <strong>Chromatic adaptation</strong> re-expresses the same color under the D50 sun so it looks the same to a human observer in that realm.</p>
+        </div>
+        <div class="tip">
+          <details>
+            <summary><strong>Where do these numbers come from?</strong></summary>
+            <ul>
+              <li><strong>B</strong> and <strong>B<sup>−1</sup></strong> are the standard <em>Bradford</em> cone-response matrices.</li>
+              <li><strong>W<sub>65</sub></strong> and <strong>W<sub>50</sub></strong> are the CIE D65/D50 white points (Y normalized to 1).</li>
+              <li>The scale factors (1.0583, 0.9808, 0.7514) are per-channel ratios of cone responses under D50 vs. D65.
+              </li>
+            </ul>
+            <p>In short: we convert to a cone-response space, scale to the target realm’s white, then convert back to XYZ.</p>
+          </details>
+        </div>
+        <div class="code">
+          <!-- Bradford cone-response matrix -->
+          <div class="code-type animate">B =</div>
+          <div class="code-type animate">⎡ &nbsp;0.8951&nbsp;&nbsp;&nbsp; 0.2664&nbsp;&nbsp; −0.1614 ⎤</div>
+          <div class="code-type animate">⎢ −0.7502&nbsp;&nbsp;&nbsp; 1.7135&nbsp;&nbsp;&nbsp; 0.0367 ⎥</div>
+          <div class="code-type animate">⎣ &nbsp;0.0389&nbsp;&nbsp; −0.0685&nbsp;&nbsp;&nbsp; 1.0296 ⎦</div><br>
+
+          <div class="code-type animate">B<sup>−1</sup> =</div>
+          <div class="code-type animate">⎡ &nbsp;0.9869929&nbsp; −0.1470543&nbsp;&nbsp; 0.1599627 ⎤</div>
+          <div class="code-type animate">⎢ &nbsp;0.4323053&nbsp;&nbsp; 0.5183603&nbsp;&nbsp; 0.0492912 ⎥</div>
+          <div class="code-type animate">⎣ −0.0085287&nbsp;&nbsp; 0.0400428&nbsp;&nbsp; 0.9684867 ⎦</div><br>
+
+          <!-- Source/target white points (Y normalized to 1) -->
+          <div class="code-type animate">W<sub>65</sub> = (0.95047, 1.00000, 1.08883)</div>
+          <div class="code-type animate">W<sub>50</sub> = (0.96422, 1.00000, 0.82521)</div><br>
+
+          <!-- Cone responses and per-channel scale -->
+          <div class="code-type animate">L<sub>65</sub>MS = B · W<sub>65</sub> = (0.94142854, 1.04041747, 1.08953265)</div>
+          <div class="code-type animate">L<sub>50</sub>MS = B · W<sub>50</sub> = (0.99628443, 1.02042736, 0.81864437)</div>
+          <div class="code-type animate">Scale = diag(L<sub>50</sub>MS ÷ L<sub>65</sub>MS) = diag(1.05826878, 0.98078646, 0.75137204)</div><br>
+
+          <!-- Apply Bradford: X'Y'Z' = B^{-1} · Scale · B · XYZ -->
+          <div class="code-type animate">Given XYZ(D65) = (0.193727, 0.273518, 0.170880)</div>
+          <div class="code-type animate">→ XYZ(D50) = B<sup>−1</sup> · diag(L<sub>50</sub>MS ÷ L<sub>65</sub>MS) · B · XYZ(D65)</div>
+          <div class="code-type animate">→ <strong>XYZ(D50) = (0.200684, 0.273726, 0.130850)</strong><span class="cursor animate">_</span></div>
+        </div>
+
+        <!-- Mini diagram: realm/white shift -->
+        <div style="margin-top:12px;">
+          <svg viewBox="0 0 420 120" width="100%" height="auto" role="img"
+            aria-label="Chromatic adaptation illustration D65 to D50">
+            <desc>Two realms (D65 cool, D50 warm). A color point adapts from XYZ(D65) to XYZ(D50) to keep appearance under the new white.</desc>
+            <!-- Realms -->
+            <g font-size="10" fill="#5f6368">
+              <circle cx="60" cy="35" r="14" fill="#629c67" stroke="#629c67" />
+              <text x="60" y="60" text-anchor="middle">D65</text>
+              <circle cx="140" cy="35" r="14" fill="#6c927f" stroke="#6c927f" />
+              <text x="140" y="60" text-anchor="middle">D50</text>
+            </g>
+            <!-- Axis box -->
+            <rect x="210" y="10" width="190" height="100" fill="#f8f5ef00" />
+            <text x="305" y="20" font-size="10" fill="#5f6368" text-anchor="middle">XYZ coordinates</text>
+            <!-- Axes -->
+            <line x1="230" y1="95" x2="380" y2="95" stroke="#d9dde3" />
+            <line x1="230" y1="95" x2="230" y2="30" stroke="#d9dde3" />
+            <!-- Points -->
+            <circle cx="270" cy="70" r="4" fill="#629c67" />
+            <text x="270" y="62" font-size="9" fill="#629c67" text-anchor="middle">XYZ(D65)</text>
+            <circle cx="340" cy="65" r="4" fill="#6c927f" />
+            <text x="340" y="57" font-size="9" fill="#6c927f" text-anchor="middle">XYZ(D50)</text>
+            <!-- Arrow -->
+            <defs>
+              <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                <path d="M0,0 L8,3 L0,6 Z" fill="#9aa1a9" />
+              </marker>
+            </defs>
+            <line x1="274" y1="69" x2="336" y2="66" stroke="#9aa1a9" marker-end="url(#arr)" />
+            <text x="305" y="84" font-size="9" fill="#9aa1a9" text-anchor="middle">adapt D65 → D50</text>
+          </svg>
+        </div>
+
+        <p>Now our color is pinned on the <strong>D50 map</strong>, ready for Step 5 (XYZ → Lab) before we hand it to the ICC profile.</p>
+        <div class="tip"><em>tldr;</em> Most print workflows reference <strong>D50</strong>. sRGB is D65. We adapt whites with the Bradford transform so colors compare in the same viewing white.</div>
+      </section>
+
+      <section>
+        <h2>Stat sheet unlocked: XYZ (D50) → Lab (D50)</h2>
+
+        <p><strong>CIE L*a*b*</strong> (aka “Lab”) is a more human-aligned map for color: <strong>L*</strong> is lightness, <strong>a*</strong> runs green↔red, and <strong>b*</strong> runs blue↔yellow. It’s roughly perceptually uniform, so equal numeric steps feel closer to equal visual steps. Most ICC profile workflows use Lab as the neutral handoff before device-specific CMYK.</p>
+        <div class="tip">
+          <details>
+            <summary><strong>What’s an ICC profile?</strong></summary>
+            <p>An ICC profile is like a translation guide for color. It tells software how a specific device—monitor, printer, camera—handles color, so the same “recipe” looks consistent everywhere. Profiles are created by measuring a device’s color behavior, then mapping it to a common standard (like XYZ or Lab) so colors can be converted accurately between devices.</p>
+          </details>
+        </div>
+        <div class="callout">
+          <h3>Why switch maps here?</h3>
+          <div class="grid">
+            <div>XYZ is a great universal coordinate system, but it’s not laid out the way our eyes feel changes. Lab is closer to perception, which is why it’s the “stat sheet” many profiles and ΔE (color difference) formulas like to read.
+            </div>
+            <div class="code">
+              <div class="code-type animate">L* = 116·f(Y/Y<sub>n</sub>) − 16</div>
+              <div class="code-type animate">a* = 500·(f(X/X<sub>n</sub>) − f(Y/Y<sub>n</sub>))</div>
+              <div class="code-type animate">b* = 200·(f(Y/Y<sub>n</sub>) − f(Z/Z<sub>n</sub>))</div>
+              <div class="code-type animate">with &nbsp; f(t) = t<sup>1/3</sup> &nbsp;(t &gt; ε)&nbsp; else &nbsp;(κ·t + 16)/116<span class="cursor animate">_</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="tip">
+          <details>
+            <summary><strong>Where do ε and κ come from?</strong></summary>
+            <ul>
+              <li><strong>ε</strong> = 216/24389 ≈ <code>0.008856</code> and <strong>κ</strong> = 24389/27 ≈
+                <code>903.296</code> are the CIE constants that define the “toe” where we switch from linear to cube-root behavior in <code>f(t)</code>.</li>
+              <li>They’re chosen so the curve is smooth and matches visual experiments around near-black behavior.</li>
+              <li>We use the D50 reference white (X<sub>n</sub>,Y<sub>n</sub>,Z<sub>n</sub>) because we already adapted to D50 using the Bradford transform.</li>
+            </ul>
+            <p>In short: Lab uses a cube-root curve (with a small linear segment near black) to better match how brightness and color differences feel to human observers.</p>
+          </details>
+        </div>
+        <div class="code">
+          <div class="code-type animate"><strong>D50 reference white X<sub>n</sub>,Y<sub>n</sub>,Z<sub>n</sub> = 0.96422, 1.00000, 0.82521:</strong></div>
+          <div class="code-type animate"> Input XYZ(D50) from Step 4 = (0.200684, 0.273726, 0.130850)<br></div>
+
+          <div class="code-type animate">Normalize by white:</div>
+          <div class="code-type animate">x<sub>r</sub> = X/X<sub>n</sub> = 0.200684 / 0.96422 = <strong>0.208131</strong></div>
+          <div class="code-type animate">y<sub>r</sub> = Y/Y<sub>n</sub> = 0.273726 / 1.00000 = <strong>0.273726</strong></div>
+          <div class="code-type animate">z<sub>r</sub> = Z/Z<sub>n</sub> = 0.130850 / 0.82521 = <strong>0.158566</strong></div><br>
+
+          <div class="code-type animate">Apply f(t):</div>
+          <div class="code-type animate">f(x<sub>r</sub>) = <strong>0.592624</strong>,</div>
+          <div class="code-type animate">f(y<sub>r</sub>) = <strong>0.649290</strong>,</div>
+          <div class="code-type animate">f(z<sub>r</sub>) = <strong>0.541256</strong></div><br>
+
+          <div class="code-type animate">Compute Lab:</div>
+          <div class="code-type animate">L* = 116·0.649290 − 16 =&nbsp; <strong>59.318</strong></div>
+          <div class="code-type animate">a* = 500·(0.592624 − 0.649290) =&nbsp; <strong>−28.333</strong></div>
+          <div class="code-type animate">b* = 200·(0.649290 − 0.541256) =&nbsp; <strong>21.607</strong></div><br>
+
+          <div class="code-type animate">→ <strong>Lab(D50) = (59.318, −28.333, 21.607)</strong><span class="cursor animate">_</span> </div>
+        </div>
+        <p>With Lab stats on the sheet, we’re ready to hand the color to the printer’s ICC profile, which will translate these human-aligned numbers into real CMYK inks.</p>
+        <div class="tip"><em>tldr;</em> CIE L*a*b* is perceptually roughly uniform; ICC profiles commonly map from Lab to device colors. It aligns better to vision than raw XYZ.</div>
+      </section>
+
+      <section>
+        <h2>Lab → CMYK: the final dungeon boss</h2>
+
+        <p>There’s no single “correct” CMYK formula hiding in a dusty tome. The numbers depend entirely on the printing press’s <strong>ICC profile</strong>, which knows that machine’s exact pigment behavior, limits, and tricks for mixing colors. The profile decides:</p>
+        <ul>
+          <li><strong>Tone curves</strong> – how each pigment ramps from light to dark</li>
+          <li><strong>GCR/UCR</strong> – how much black (K) replaces mixes of cyan, magenta, yellow</li>
+          <li><strong>Total ink limit</strong> – the maximum combined % of CMYK to prevent over-saturating the paper
+          </li>
+        </ul>
+        <div class="callout">
+          If Lab is your character sheet, the ICC profile is the dungeon master’s final say on how your stats play out in the world. Different profiles = different campaigns, and “rendering intents” are your chosen strategies for the encounter.
+        </div>
+
+        <div class="tip">
+          <strong>Profile used:</strong> US Web Coated (SWOP) v2—a standard commercial offset profile for coated stock in North America. It encodes ink ramps (tone curves), black generation (GCR/UCR), and total area coverage (TAC).
+        </div>
+
+        <h3>Rendering intents: Choosing your approach</h3>
+        <p>When converting from Lab to CMYK, you also choose a <strong>rendering intent</strong>. This tells the ICC how to handle colors that don’t fit inside the press’s gamut (its printable range):</p>
+        <ul>
+          <li><strong>Perceptual</strong> – adjusts all colors so they fit smoothly, keeping relationships between colors looking natural.</li>
+          <li><strong>Relative Colorimetric</strong> – maps in-gamut colors exactly, clips out-of-gamut colors to the nearest printable color. Often used for brand-critical work with black point compensation.</li>
+          <li><strong>Saturation</strong> – tries to keep colors as vivid as possible, even if accuracy suffers. Often used for charts/graphics.</li>
+          <li><strong>Absolute Colorimetric</strong> – preserves colors exactly, including the paper color (no adaptation). Used for proofing simulations.</li>
+        </ul>
+        <div class="callout sandbox-table-wrap">
+          <table class="sandbox-table">
+            <thead>
+              <tr>
+                <th>Rendering intent</th>
+                <th>Swatch</th>
+                <th>C%</th>
+                <th>M%</th>
+                <th>Y%</th>
+                <th>K%</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Perceptual</td>
+                <td>
+                  <div class="swatch" style="background: rgb(96, 152, 102);"></div>
+                </td>
+                <td>65.88</td>
+                <td>21.96</td>
+                <td>74.51</td>
+                <td>4.31</td>
+              </tr>
+              <tr>
+                <td>Relative Colorimetric</td>
+                <td>
+                  <div class="swatch" style="background: rgb(89, 153, 96);"></div>
+                </td>
+                <td>68.63</td>
+                <td>20.0</td>
+                <td>79.22</td>
+                <td>3.92</td>
+              </tr>
+              <tr>
+                <td>Saturation</td>
+                <td>
+                  <div class="swatch" style="background: rgb(90, 154, 97);"></div>
+                </td>
+                <td>67.06</td>
+                <td>20.78</td>
+                <td>76.86</td>
+                <td>4.31</td>
+              </tr>
+              <tr>
+                <td>Absolute Colorimetric</td>
+                <td>
+                  <div class="swatch" style="background: rgb(104, 176, 118);"></div>
+                </td>
+                <td>61.96</td>
+                <td>9.41</td>
+                <td>70.59</td>
+                <td>0.39</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="align-content: top;">
+          <p><strong>Which should you pick?</strong> For brand colors and spot-critical assets, choose <em>Relative Colorimetric</em> with black-point compensation. For colors that push beyond gamut, <em>Perceptual</em> usually yields smoother, more natural results.</p>
+        </div>
+        <div class="tip"><em>tldr;</em> There is no single closed‑form “correct” CMYK. The press profile defines tone curves, GCR/UCR (how much black vs. CMY), and total pigment limits. We ask the ICC for the separation.</div>
+      </section>
+
+      <section>
+        <h2>Sidequest—“naïve” CMYK (no ICC)</h2>
+        <div class="grid">
+        <div><em>Quick and dirty conversion:</em> This is the back-of-the-napkin math for CMYK and what is used by most online converters. It's very limited and ignores all the real-world stuff—printer behavior, paper type, dot gain, total ink limits. Think of it as speed-running straight to the final boss: you’ll get there, but you won't have any of the loot or skills you need to win.</div>
+
+        <div class="code">
+          <div class="code-type animate">K = 1 − max(R, G, B)</div>
+          <div class="code-type animate">C = (1 − R − K) / (1 − K)</div>
+          <div class="code-type animate">M = (1 − G − K) / (1 − K)</div>
+          <div class="code-type animate">Y = (1 − B − K) / (1 − K)<span class="cursor animate">_</span></div>
+        </div>
+        </div>
+        <div class="callout sandbox-table-wrap">
+          <table class="sandbox-table">
+            <thead>
+              <tr>
+                <th>Rendering intent</th>
+                <th>Swatch</th>
+                <th>C%</th>
+                <th>M%</th>
+                <th>Y%</th>
+                <th>K%</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Naïve math</td>
+                <td>
+                  <div class="swatch" style="background: rgb(98, 156, 103);"></div>
+                </td>
+                <td>37.18</td>
+                <td>0.0</td>
+                <td>33.97</td>
+                <td>38.82</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="tip">
+          <strong>Why it’s limited:</strong> This formula assumes your printer is perfect and your paper has no quirks. ICC profiles exist to fix those assumptions and match what you <em>see</em> to what actually <em>prints</em>.
+        </div>
+      </section>
+
+      <section id="interactive-sandbox">
+        <h2>Bonus dungeon: color conversion sandbox</h2>
+        <p class="muted">This demo approximates ICC rendering intents (perceptual, relative colorimetric, saturation, absolute) for learning purposes. Real output depends on printer/profile.</p>
+        <div class="sandbox-card">
+          <label for="hexInput" class="sandbox-label">Enter a color (hex):</label>
+          <div class="sandbox-row">
+            <input id="hexInput" class="sandbox-input" type="text" value="#629c67" maxlength="7"
+              aria-label="Hex color, e.g. #629c67">
+            <button id="convertBtn" class="sandbox-btn"><strong>Convert</strong></button>
+            <div id="liveSwatch" class="sandbox-swatch" aria-label="Input color swatch"></div>
+          </div>
+          <div class="sandbox-note">Tip: Try near-neutrals (#f8f8f8), near-black (#111111), or neon-like colors to see
+            differences.</div>
+          <div class="sandbox-table-wrap">
+            <table class="sandbox-table" id="intentTable" aria-label="Rendering intent comparison">
+              <thead>
+                <tr>
+                  <th>Intent</th>
+                  <th>Swatch</th>
+                  <th>Lab (D50)</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <footer class="sub" style="padding:20px; text-align:left;">
+        <span style="background-color: #ffffff33; padding: 10px; border-radius: 4px;">© 2025 – RGB→CMYK guide by Chris Yasuda Drysdale</span>
+      </footer>
+
+    </main>
+  </div>
+  <script src="nav.js"></script>
+  <script src="imgcompslider.js"></script>
+  <script src="sandbox.js"></script>
+  <script src="animateIfInView.js"></script>
+</body>
+
+</html>
