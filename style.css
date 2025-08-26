@@ -2,6 +2,7 @@
     --black: #352f36;
     --muted: #78766f;
     --bg: #faf9f1;
+    --bgImage: url('images/pxArt.png');
     --card: rgba(248, 245, 239, 0.70);
     --card2: #f0ebde66;
     --callout: rgba(240, 235, 222, 0.53);
@@ -21,7 +22,8 @@
 /* === Dark theme === */
 :root[data-theme="dark"]{
   --bg: #041326;
-  --card: rgba(4, 19, 38, 0.92);
+  --bgImage: url('images/pxArt.png');
+  --card: rgba(4, 19, 38, 0.80);
   --card2: #04132666;
   --callout: rgba(5, 28, 56, 0.45);
   --borderLight: #2b2b2f;
@@ -38,81 +40,99 @@
   --toc: rgba(4, 19, 38, 0.97);
 }
   /* Switch sizing */
-  .theme-toggle{
+  .theme-toggle {
     --h: 26px;             /* height */
     --w: 50px;             /* width of the track */
     --pad: 2px;            /* inner padding */
-    --thumb: calc(var(--h) - 2*var(--pad));
+    --thumb: calc(var(--h) - 3*var(--pad));
     display:inline-block;
   }
 
   /* Visually hidden checkbox (keeps it accessible) */
-  .theme-toggle input{
+  .theme-toggle input {
     position:absolute;
-    width:1px; height:1px; clip:rect(0 0 0 0);
-    overflow:hidden; white-space:nowrap; border:0; padding:0; margin:-1px;
+    width:1px; 
+    height:1px; 
+    clip:rect(0 0 0 0);
+    overflow:hidden; 
+    white-space:nowrap; 
+    border:0; 
+    padding:0; 
+    margin:-1px;
   }
 
   /* Track */
-  .theme-toggle label{
+  .theme-toggle label {
     position:relative;
     display:inline-block;
-    width:var(--w); height:var(--h);
+    width:var(--w); 
+    height:var(--h);
     border-radius:999px;
     background: var(--card);
-    border:1px solid var(--borderDark);
-    box-shadow: inset 0 1px 2px rgba(0,0,0,.08);
+    border:1px solid var(--borderLight);
+    box-shadow: inset 0 1px 2px var(--black);
     cursor:pointer;
   }
 
   /* Optional subtle sheen */
-  .theme-toggle .track{
-    position:absolute; inset:0;
+  .theme-toggle .track {
+    position:absolute; 
+    inset:0;
     border-radius:inherit;
     background-image: radial-gradient(at 55% 75%, var(--callout) 55%, var(--muted) 185%); 
   }
 
   /* Thumb */
-  .theme-toggle .thumb{
+  .theme-toggle .thumb {
     position:absolute;
     left:var(--pad);
     top:var(--pad);
-    width:var(--thumb); height:var(--thumb);
+    width:var(--thumb); 
+    height:var(--thumb);
     border-radius:50%;
-    background: radial-gradient(circle at 55% 35%, var(--bg) 55%, var(--muted) 100%);
+    background: radial-gradient(circle at 55% 55%, var(--bg) 55%, var(--muted) 80%);
     border:1px solid var(--borderLight);
     display:grid; place-items:center;
-    box-shadow: 0 1px 2px rgba(0,0,0,.15);
+    box-shadow: 0 1px 2px var(--muted);
     transition: transform .28s cubic-bezier(.2,.8,.2,1), 
-                background .2s, border-color .2s, box-shadow .2s;
+                background .2s, 
+                border-color .2s, 
+                box-shadow .2s;
     will-change: transform;
   }
 
   /* Icons inside the thumb */
   .theme-toggle .icon{ 
     position:absolute; 
-    font-size: 12px; line-height:1;
+    font-size: 14px; 
+    line-height:1;
     transition: transform .25s ease, opacity .2s ease;
   }
-  .theme-toggle .sun{ opacity:1; transform: rotate(0) scale(1); }
-  .theme-toggle .moon{ opacity:0; transform: rotate(-45deg) scale(.5); }
+  .theme-toggle .sun { 
+    opacity:1; 
+    transform: rotate(0) scale(1); 
+  }
+  .theme-toggle .moon { 
+    opacity:0; 
+    transform: rotate(-45deg) scale(.5); 
+  }
 
   /* Focus ring */
-  .theme-toggle input:focus-visible + label{
+  .theme-toggle input:focus-visible + label {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
   }
 
   /* ON state (dark) — slide + roll the thumb */
-  .theme-toggle input:checked + label .thumb{
+  .theme-toggle input:checked + label .thumb {
     transform: translateX(calc(var(--w) - var(--thumb) - 2*var(--pad))) rotate(180deg);
   }
-  .theme-toggle input:checked + label .sun{ opacity:0; transform: rotate(45deg) scale(.5); }
-  .theme-toggle input:checked + label .moon{ opacity:1; transform: rotate(0) scale(1); }
+  .theme-toggle input:checked + label .sun { opacity:0; transform: rotate(45deg) scale(.5); }
+  .theme-toggle input:checked + label .moon { opacity:1; transform: rotate(0) scale(1); }
 
   /* Respect reduced motion */
   @media (prefers-reduced-motion: reduce){
-    .theme-toggle .thumb, .theme-toggle .icon{ transition:none; }
+    .theme-toggle .thumb, .theme-toggle .icon { transition:none; }
   }
 
 
@@ -130,7 +150,7 @@
     margin: 0; 
     padding: 0; 
     background: var(--bg);
-    background-image: url('images/pxArt.png'); 
+    background-image: var(--bgImage); 
     background-size: cover; 
     background-position: left; 
     background-repeat: no-repeat; 
@@ -166,7 +186,7 @@
   }
   .header-actions{
     display: flex;
-    align-items: end;
+    align-items: self-end;
     gap: 10px;
     flex-wrap: wrap;
     flex-direction: row;
@@ -299,7 +319,6 @@
   .image-container {
     padding: 0rem;
     text-align: center;
-    background-color: rgba(255, 255, 255, 0.1);
     border-radius: 8px;
     display: flex;
     justify-content: center;
@@ -602,7 +621,7 @@
 
 /* === Image Comparison Slider === */
   .image-compare {
-    --splitter-color: hotpink;
+    --splitter-color: #e88f36;
     --splitter-size: 0.125rem;
     --expand: 0.875rem;
     --handle-size: calc(var(--expand) + var(--splitter-size));
@@ -614,7 +633,7 @@
     position: absolute;
     inset-block: 0 calc(-1 * var(--expand));
     inset-inline-start: calc(-1 * var(--expand));
-    inline-size: calc(var(--expand) + 39% + var(--splitter-size) / 2);
+    inline-size: calc(var(--expand) + 0% + var(--splitter-size) / 2);
     max-inline-size: calc(var(--expand) + 100%);
     min-inline-size: var(--handle-size);
     padding-block-end: var(--expand);
@@ -635,6 +654,8 @@
   .image-compare > img {
     max-inline-size: 100%;
     block-size: auto;
+        border-radius: 10px;
+
   }
   .image-compare span::after {
     content: "";
@@ -836,7 +857,7 @@
     .header-actions {
       width: 100%;
       justify-content: space-between;
-      align-items: baseline;
+      align-items: self-end;
     }
   }
 
