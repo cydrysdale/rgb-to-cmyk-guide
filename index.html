@@ -20,10 +20,17 @@
         <div class="sub">Practical math to satisfy your inner-production designer</div>
       </div>
 
-      <!-- Nav toggle sits to the right -->
-      <div class="toc-mobile">
-        <button id="tocToggle" aria-expanded="false" aria-controls="tocList">☰ Inventory</button>
-        <nav id="tocList" class="toc" aria-label="On this page"></nav>
+      <!-- Right-side controls -->
+      <div class="header-actions">
+        <!-- Darkmode button -->
+        <div class="theme-toggle">
+          <button id="themeToggle" aria-pressed="false" aria-label="Toggle dark mode">🌙</button>
+        </div>      
+        <!-- Mobile TOC -->
+        <div class="toc-mobile">
+          <button id="tocToggle" aria-expanded="false" aria-controls="tocList">☰ Inventory</button>
+          <nav id="tocList" class="toc" aria-label="On this page"></nav>
+        </div>
       </div>
     </div>
   </header>
@@ -747,13 +754,14 @@
       </section>
 
 
-      <footer class="sub" style="padding:20px; text-align:left;">
-        <span class="glass">© 2025 – RGB→CMYK guide by Chris Yasuda Drysdale</span>
+      <footer class="sub glass">
+        <span>© 2025 – RGB→CMYK guide by Chris Yasuda Drysdale</span>
       </footer>
 
     </main>
   </div>
   <script src="nav.js"></script>
+  <script src="theme.js"></script>
   <script src="imgcompslider.js"></script>
   <script src="sandbox.js"></script>
   <script src="animateIfInView.js"></script>
