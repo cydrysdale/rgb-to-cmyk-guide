@@ -37,6 +37,84 @@
   --crt: #1d324b;
   --toc: rgba(4, 19, 38, 0.97);
 }
+  /* Switch sizing */
+  .theme-toggle{
+    --h: 26px;             /* height */
+    --w: 50px;             /* width of the track */
+    --pad: 2px;            /* inner padding */
+    --thumb: calc(var(--h) - 2*var(--pad));
+    display:inline-block;
+  }
+
+  /* Visually hidden checkbox (keeps it accessible) */
+  .theme-toggle input{
+    position:absolute;
+    width:1px; height:1px; clip:rect(0 0 0 0);
+    overflow:hidden; white-space:nowrap; border:0; padding:0; margin:-1px;
+  }
+
+  /* Track */
+  .theme-toggle label{
+    position:relative;
+    display:inline-block;
+    width:var(--w); height:var(--h);
+    border-radius:999px;
+    background: var(--card);
+    border:1px solid var(--borderDark);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,.08);
+    cursor:pointer;
+  }
+
+  /* Optional subtle sheen */
+  .theme-toggle .track{
+    position:absolute; inset:0;
+    border-radius:inherit;
+    background-image: radial-gradient(at 55% 75%, var(--callout) 55%, var(--muted) 185%); 
+  }
+
+  /* Thumb */
+  .theme-toggle .thumb{
+    position:absolute;
+    left:var(--pad);
+    top:var(--pad);
+    width:var(--thumb); height:var(--thumb);
+    border-radius:50%;
+    background: radial-gradient(circle at 55% 35%, var(--bg) 55%, var(--muted) 100%);
+    border:1px solid var(--borderLight);
+    display:grid; place-items:center;
+    box-shadow: 0 1px 2px rgba(0,0,0,.15);
+    transition: transform .28s cubic-bezier(.2,.8,.2,1), 
+                background .2s, border-color .2s, box-shadow .2s;
+    will-change: transform;
+  }
+
+  /* Icons inside the thumb */
+  .theme-toggle .icon{ 
+    position:absolute; 
+    font-size: 12px; line-height:1;
+    transition: transform .25s ease, opacity .2s ease;
+  }
+  .theme-toggle .sun{ opacity:1; transform: rotate(0) scale(1); }
+  .theme-toggle .moon{ opacity:0; transform: rotate(-45deg) scale(.5); }
+
+  /* Focus ring */
+  .theme-toggle input:focus-visible + label{
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* ON state (dark) — slide + roll the thumb */
+  .theme-toggle input:checked + label .thumb{
+    transform: translateX(calc(var(--w) - var(--thumb) - 2*var(--pad))) rotate(180deg);
+  }
+  .theme-toggle input:checked + label .sun{ opacity:0; transform: rotate(45deg) scale(.5); }
+  .theme-toggle input:checked + label .moon{ opacity:1; transform: rotate(0) scale(1); }
+
+  /* Respect reduced motion */
+  @media (prefers-reduced-motion: reduce){
+    .theme-toggle .thumb, .theme-toggle .icon{ transition:none; }
+  }
+
 
 
 
@@ -88,7 +166,7 @@
   }
   .header-actions{
     display: flex;
-    align-items: baseline;
+    align-items: end;
     gap: 10px;
     flex-wrap: wrap;
     flex-direction: row;

@@ -24,8 +24,16 @@
       <div class="header-actions">
         <!-- Darkmode button -->
         <div class="theme-toggle">
-          <button id="themeToggle" aria-pressed="false" aria-label="Toggle dark mode">🌙</button>
-        </div>      
+          <input id="themeSwitch" type="checkbox" role="switch" aria-checked="false" aria-label="Toggle dark mode">
+          <label for="themeSwitch">
+            <span class="track" aria-hidden="true"></span>
+            <span class="thumb" aria-hidden="true">
+              <span class="icon sun">&#9788;</span>
+              <span class="icon moon">&#9789;</span>
+            </span>
+          </label>
+        </div>
+      
         <!-- Mobile TOC -->
         <div class="toc-mobile">
           <button id="tocToggle" aria-expanded="false" aria-controls="tocList">☰ Inventory</button>
