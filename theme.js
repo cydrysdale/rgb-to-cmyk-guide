@@ -27,7 +27,7 @@
     apply(now === 'dark' ? 'light' : 'dark');
   });
 
-  // if you want to react to OS changes only when user hasn't chosen manually:
+  // React to OS changes only when user hasn't chosen manually:
   const mm = window.matchMedia('(prefers-color-scheme: dark)');
   mm.addEventListener('change', (e) => {
     if (!localStorage.getItem('theme')) apply(e.matches ? 'dark' : 'light');
