@@ -1,7 +1,7 @@
 :root {
     --black: #352f36;
     --muted: #78766f;
-    --shadow: #78766f66;
+    --shadow: #78766f77;
     --bg: #faf9f1;
     --bgImage: url('images/pxArt.png');
     --card: rgba(248, 245, 239, 0.70);
@@ -16,7 +16,10 @@
     --link-visited: #355437;
     --link-hover: #153520;
     --crt: #78766f;
+    --crt-text: #c4edeb;
+    --crt-glow: 0 0 5px rgb(27, 220, 200);
     --toc: rgba(248, 245, 239, 0.95);
+    --toggle-shadow: -1px 2px 4px var(--shadow);
   }
     
 
@@ -31,7 +34,7 @@
     --borderDark: #1d324b;
     --black: #e8e6ee;   /* body text becomes light */
     --muted: #a6a6b3;
-    --shadow: #a6a6b355;
+    --shadow: #a6a6b344;
     --light: #e7e9ec;
     --accent: #79d99b;
     --accent-light: #79d99b33;
@@ -40,12 +43,15 @@
     --link-visited: #355437;
     --link-hover: #dff0d8;
     --crt: #1d324b;
+    --crt-text: #f5c914;
+    --crt-glow: 0 0 5px rgb(255, 191, 0);
     --toc: rgba(4, 19, 38, 0.97);
+    --toggle-shadow: 1px -2px 4px var(--bg);
   }
   /* Switch sizing */
   .theme-toggle {
-    --h: 28px;             /* height */
-    --w: 52px;             /* width of the track */
+    --h: 33px;             /* height */
+    --w: 65px;             /* width of the track */
     --pad: 2px;            /* inner padding */
     --thumb: calc(var(--h) - 2*var(--pad));
     --inset-shadow-width: calc(var(--h) * .13);
@@ -78,32 +84,20 @@
     width:var(--w); 
     height:var(--h);
     border-radius:999px;
-    background: var(--card);
+    background: transparent;
     border:0px solid var(--borderLight);
-    box-shadow: inset 0 1px 2px var(--shadow);
+    box-shadow: var(--toggle-shadow);
     cursor:pointer;
   }
-
+  
   .theme-toggle .track {
     position:absolute; 
     inset:0;
     border-radius:inherit;
-    background: radial-gradient(at 55% 150%, var(--callout) 45%, var(--shadow) 225%);
-    box-shadow: inset 0 var(--border-spacing) var(--inset-shadow-width) var(--shadow);
+    background: radial-gradient(at 55% 150%, var(--card2) 35%, var(--shadow) 175%);
+    box-shadow: inset -2px var(--border-spacing) var(--inset-shadow-width) var(--shadow);
     /* FIX: add commas between properties */
   }
-  .theme-toggle .track:before { 
-    content: ""; 
-    position: absolute; 
-    inset: 0;
-    filter: blur(1px); 
-    opacity: .15; 
-    border-radius: inherit; 
-    z-index: 0; 
-    background: linear-gradient(0deg, var(--bg) 25%, var(--shadow) 80%); 
-    mask: linear-gradient(var(--bg) 0 0) content-box, linear-gradient(var(--bg) 0 0); 
-  }
-
 
   /* Thumb */
   .theme-toggle .thumb {
@@ -113,10 +107,10 @@
     width: var(--thumb); 
     height: var(--thumb);
     border-radius: 50%;
-    background: radial-gradient(circle at 55% 55%, var(--bg) 55%, var(--shadow) 80%);
+    background: linear-gradient(30deg, var(--shadow) 25%, var(--bg) 80%); 
     border: 0px solid var(--borderLight);
     display:grid; place-items:center;
-    box-shadow: -1px 2px 4px var(--shadow);
+    box-shadow: var(--toggle-shadow);
     /* FIX: only list properties, not transform functions */
     transition: transform var(--speed) cubic-bezier(.4,0,.2,1),
                 background var(--speed),
@@ -129,18 +123,18 @@
     content: ""; 
     position: absolute; 
     inset: 3px; 
-    opacity: .85; 
-    filter: blur(1px); 
+    opacity: .95; 
+    filter: blur(2px); 
     border-radius: inherit; 
     padding: var(--transition-spacing); 
-    background: linear-gradient(0deg, var(--bg) 25%, var(--shadow) 80%); 
+    background: radial-gradient(circle at 45% 85%, var(--bg) 45%, var(--shadow) 75%);
     mask: linear-gradient(var(--bg) 0 0) content-box, linear-gradient(var(--bg) 0 0); 
   }
 
   /* Icons inside the thumb */
   .theme-toggle .icon { 
     position:absolute; 
-    font-size: 12px; 
+    font-size: 18px; 
     line-height:1;
     /* Counter-rotate by --roll; per-icon tilt via --tilt */
     transform: rotate(calc(-1 * var(--roll) + var(--tilt, 0deg))) scale(var(--scale, 1));
@@ -150,12 +144,13 @@
   .theme-toggle .sun  {
     color: var(--muted);  
     opacity: 1; 
-    --scale: 1; /* --tilt: 0deg (default) */ 
+    --scale: 1; 
+    /* --tilt: 0deg (default) */ 
   }
   .theme-toggle .moon { 
     opacity: 0; 
-    --scale: .5; 
-    --tilt: 45deg; 
+    --scale: .75; 
+    --tilt: 145deg; 
   }
 
 
@@ -177,7 +172,7 @@
   }
 
   /* Animate icon swap using vars (don't override transform directly) */
-  .theme-toggle input:checked + label .sun  { opacity: 0; --scale: .5; }
+  .theme-toggle input:checked + label .sun  { opacity: 0; --scale: .75; }
   .theme-toggle input:checked + label .moon { opacity: 1; --scale: 1; }
 
   /* Reduced motion */
@@ -185,6 +180,14 @@
     .theme-toggle .thumb, .theme-toggle .icon, .theme-toggle .track { transition: none; }
   }
 
+  .toggle-container {
+    padding: 0rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
 
 
 
@@ -331,6 +334,16 @@
     background: #629C67; 
     margin: 6px 0;
   }
+  .swatch2 { 
+    width: 75%; 
+    height: 75%;
+    min-height: 150px;
+    max-height: 500px; 
+    border-radius: 10px; 
+    border: 1px solid var(--borderDark); 
+    background: #b16002; 
+    margin: 6px 0;
+  }
   .pill { 
     display:inline-block; 
     padding:4px 10px; 
@@ -404,8 +417,8 @@
     padding: 40px 20px 20px 15px; 
     overflow: auto; 
     position: relative; /* allows absolute positioning inside */ 
-    color: #c4edeb;
-    text-shadow: 0 0 5px rgb(27, 220, 200);
+    color: var(--crt-text);
+    text-shadow: var(--crt-glow);
     margin: 6px 0;
   }
   .code::before { 
@@ -417,8 +430,8 @@
     padding: 10px 4px; 
     font-size: 16px; 
     font-size: clamp(4px, 3vw, 12px);    
-    color: #c4edeb; 
-    text-shadow: 0 0 5px rgb(27, 220, 200);
+    color: var(--crt-text);
+    text-shadow: var(--crt-glow);
     font-weight: 500;
   }
   /* Scan lines */
@@ -455,7 +468,8 @@
     padding: 6px 20px 6px 0;
     text-align: left;
     vertical-align: middle;
-    color: #c4edeb;
+    color: var(--crt-text);
+    text-shadow: var(--crt-glow);
     font-weight: lighter;
     font-size: clamp(5px, 4vw, 18px);
   }
@@ -683,7 +697,7 @@
     position: absolute;
     inset-block: 0 calc(-1 * var(--expand));
     inset-inline-start: calc(-1 * var(--expand));
-    inline-size: calc(var(--expand) + 0% + var(--splitter-size) / 2);
+    inline-size: calc(var(--expand) + 38.7% + var(--splitter-size) / 2);
     max-inline-size: calc(var(--expand) + 100%);
     min-inline-size: var(--handle-size);
     padding-block-end: var(--expand);

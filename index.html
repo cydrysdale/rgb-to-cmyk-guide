@@ -22,17 +22,6 @@
 
       <!-- Right-side controls -->
       <div class="header-actions">
-        <!-- Darkmode button -->
-        <div class="theme-toggle">
-          <input id="themeSwitch" type="checkbox" role="switch" aria-checked="false" aria-label="Toggle dark mode">
-          <label for="themeSwitch">
-            <span class="track" aria-hidden="true"></span>
-            <span class="thumb" aria-hidden="true">
-              <span class="icon sun">&#9788;</span>
-              <span class="icon moon">&#9789;</span>
-            </span>
-          </label>
-        </div>
       
         <!-- Mobile TOC -->
         <div class="toc-mobile">
@@ -56,20 +45,25 @@
           <div>
             <h3>Color is contextual</h3>
             <p>The same light mix can look totally different depending on what’s around it. Take <strong>orange vs. brown</strong>—they can be the exact same wavelengths. Give it a dark background or put it next to vivid colors, and it feels orange. With a light background or set against pale tones, and suddenly it’s brown. Context is everything.</p>
+            
           </div>
           <!--Image Comparison Slider-->
-          <div>
-            <figure dir="rtl">
-              <p class="image-compare" role="img" tabindex="0"
-                aria-label="When comparing the photos, it becomes noticable that the black-and-white image lacks color."
-                aria-description="This image is actually a set of two images, and when the set is focused, the two contained images are alternated between.">
-                <span>
-                  <img src="images/orange-vs-brown-dark.png">
-                </span class="image-container">
-                <img src="images/orange-vs-brown-light.png">
-              </p>
-            </figure>
-          </div>
+          
+          <div class="toggle-container">
+            <!-- Darkmode button -->
+              <div class="theme-toggle">
+                <input id="themeSwitch" type="checkbox" role="switch" aria-checked="false" aria-label="Toggle dark mode">
+                <label for="themeSwitch">
+                  <span class="track" aria-hidden="true"></span>
+                  <span class="thumb" aria-hidden="true">
+                    <span class="icon sun">&#9788;</span>
+                    <span class="icon moon">&#9789;</span>
+                  </span>
+                </label>
+              </div>
+            
+            <div class="swatch2"></div>
+            </div>
         </div>
         <h3>Color is subjective</h3>
         <p>In 2015, the internet argued nonstop about “<strong>the dress</strong>.” Some people saw white and gold, others swore it was blue and black. Both were right in a way—the photo was ambiguous, and our brains made different guesses about the lighting. It was a viral reminder that color lives in the eye of the beholder.</p>
