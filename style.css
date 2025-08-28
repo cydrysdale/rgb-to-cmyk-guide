@@ -17,7 +17,7 @@
     --link-hover: #153520;
     --crt: #78766f;
     --crt-text: #c4edeb;
-    --crt-glow: 0 0 5px rgb(27, 220, 200);
+    --crt-glow: rgb(27, 220, 200);
     --toc: rgba(248, 245, 239, 0.95);
     --thumb-shadow: -1px 2px 4px var(--shadow);
     --thumb-shadow2: -1px 2px 3px var(--shadow);
@@ -45,7 +45,7 @@
     --link-hover: #dff0d8;
     --crt: #1d324b;
     --crt-text: #f5c914;
-    --crt-glow: 0 0 5px rgb(255, 191, 0);
+    --crt-glow: rgb(255, 191, 0);
     --toc: rgba(4, 19, 38, 0.97);
     --thumb-shadow: 1px -2px 4px var(--bg);
     --thumb-shadow2: 1px -2px 4px var(--bg);
@@ -227,6 +227,7 @@
     background-position: left; 
     background-repeat: no-repeat; 
     background-attachment: fixed;
+    text-wrap: pretty;
   }
   header {
     padding: 28px 24px; 
@@ -248,6 +249,7 @@
   header .title-block {
     flex: 1 1 auto;             /* title takes the available space */
     margin-right: 0px;
+    text-wrap: pretty;
   }
   header h1 {
     margin: 0;
@@ -360,7 +362,7 @@
     max-height: 500px; 
     border-radius: 10px; 
     border: 1px solid var(--borderDark); 
-    background: #b16002; 
+    background: #8f452d; 
     margin: 6px 0;
   }
   .pill { 
@@ -450,7 +452,7 @@
     font-size: 16px; 
     font-size: clamp(4px, 3vw, 12px);    
     color: var(--crt-text);
-    text-shadow: var(--crt-glow);
+    text-shadow: 0 0 5px var(--crt-glow);
     font-weight: 500;
   }
   /* Scan lines */
@@ -704,7 +706,7 @@
 
 /* === Image Comparison Slider === */
   .image-compare {
-    --splitter-color: #e88f36;
+    --splitter-color: var(--crt-glow);
     --splitter-size: 0.125rem;
     --expand: 0.875rem;
     --handle-size: calc(var(--expand) + var(--splitter-size));
@@ -911,9 +913,15 @@
     .toc-mobile { 
       display: inline-block; 
     }
+    header .header-inner {
+      flex-wrap: nowrap;    
+    }
   }
 
   @media (max-width: 768px) {
+    header .header-inner {
+      flex-wrap: wrap;    
+    }
     .toc-mobile { 
       margin-left: 0px;
       margin-right: 20px;
