@@ -139,6 +139,10 @@
     transform: rotate(calc(-1 * var(--roll) + var(--tilt, 0deg))) scale(var(--scale, 1));
     /* FIX: add a transition so they animate */
     transition: transform var(--speed) cubic-bezier(.4,0,.2,1), opacity var(--speed) cubic-bezier(.4,0,.2,1);
+    -webkit-user-select: none; /* Safari, Chrome, Opera */
+    -moz-user-select: none;    /* Firefox */
+    -ms-user-select: none;     /* Internet Explorer/Edge */
+    user-select: none;         /* Standard syntax */
   }
   .theme-toggle .sun  {
     color: var(--muted);  
@@ -151,7 +155,6 @@
     --scale: .75; 
     --tilt: 145deg; 
   }
-
 
   /* Focus ring */
   .theme-toggle input:focus-visible + label {
