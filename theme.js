@@ -70,4 +70,16 @@
   mm.addEventListener('change', e => {
     if(!localStorage.getItem('theme')) apply(e.matches ? 'dark' : 'light', false);
   });
+
+  const input = document.querySelector('.theme-toggle input');
+  const label = input?.nextElementSibling;
+  if (input && label) {
+    const setPress = v => label.style.setProperty('--press', v ? '.94' : '1'),
+          setY    = v => label.style.setProperty('--press-y', v ? '1px' : '0px'),
+          setSh   = v => label.style.setProperty('--thumb-shadow', v ? 'inset 0 2px 4px var(--shadow)' : '-1px 2px 4px var(--shadow)');
+    input.addEventListener('keydown', e => { if (e.code === 'Space' || e.key === ' ') { setPress(1); setY(1); setSh(1); }});
+    input.addEventListener('keyup',   e => { if (e.code === 'Space' || e.key === ' ') { setPress(0); setY(0); setSh(0); }});
+  }
 })();
+
+

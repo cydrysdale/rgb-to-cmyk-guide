@@ -19,7 +19,8 @@
     --crt-text: #c4edeb;
     --crt-glow: 0 0 5px rgb(27, 220, 200);
     --toc: rgba(248, 245, 239, 0.95);
-    --toggle-shadow: -1px 2px 4px var(--shadow);
+    --thumb-shadow: -1px 2px 4px var(--shadow);
+    --thumb-shadow2: -1px 2px 3px var(--shadow);
   }
     
 
@@ -46,7 +47,8 @@
     --crt-text: #f5c914;
     --crt-glow: 0 0 5px rgb(255, 191, 0);
     --toc: rgba(4, 19, 38, 0.97);
-    --toggle-shadow: 1px -2px 4px var(--bg);
+    --thumb-shadow: 1px -2px 4px var(--bg);
+    --thumb-shadow2: 1px -2px 4px var(--bg);
   }
   /* Switch sizing */
   .theme-toggle {
@@ -63,6 +65,8 @@
     --roll: 0deg;
     --speed: 300ms;
     display:inline-block;
+    --press: 1; 
+    --press-y: 0px; 
   }
 
   /* Visually hidden checkbox (keeps it accessible) */
@@ -109,14 +113,15 @@
     background: linear-gradient(30deg, var(--shadow) 25%, var(--bg) 80%); 
     border: 0px solid var(--borderLight);
     display:grid; place-items:center;
-    box-shadow: var(--toggle-shadow);
+    box-shadow: var(--thumb-shadow);
     /* FIX: only list properties, not transform functions */
     transition: transform var(--speed) cubic-bezier(.4,0,.2,1),
                 background var(--speed),
                 border-color var(--speed),
                 box-shadow var(--speed);
     /* The transform itself lives here and in the checked-state rule (below) */
-    transform: translateX(0) rotate(var(--roll));
+    transform-origin: center;
+    transform: translateX(var(--x)) translateY(var(--press-y)) rotate(var(--roll)) scale(var(--press));
   }
   .theme-toggle .thumb::before { 
     content: ""; 
@@ -125,9 +130,15 @@
     opacity: .95; 
     filter: blur(2px); 
     border-radius: inherit; 
-    padding: var(--transition-spacing); 
+    padding: var(--transition-spacing);
     background: radial-gradient(circle at 45% 85%, var(--bg) 45%, var(--shadow) 75%);
     mask: linear-gradient(var(--bg) 0 0) content-box, linear-gradient(var(--bg) 0 0); 
+  }
+  /* pressed state (mouse/touch) */
+  .theme-toggle label:active {
+    --press: .90;                  /* shrink a bit */
+    --press-y: 1px;                /* nudge down */
+    --thumb-shadow: inset 0 2px 4px var(--shadow), var(--thumb-shadow2); /* look “pushed in” */
   }
 
   /* Icons inside the thumb */
@@ -168,6 +179,12 @@
   .theme-toggle input:checked + label .thumb {
     transform: translateX(calc(var(--w) - var(--thumb) - 2*var(--pad))) rotate(var(--roll));
   }
+
+  /* make the press/release feel snappy */
+  .theme-toggle label:active .thumb { transition-duration: 120ms; }
+
+  /* optional: improve touch responsiveness */
+  .theme-toggle label { touch-action: manipulation; }
 
   .theme-toggle input:checked + label .track {
     transform: rotate(180deg);
@@ -798,7 +815,7 @@
 
 /* === Interactive Sandbox === */
   .sandbox-card {
-    background: var(--card);
+    background: var(--callout);
     border: 1px solid var(--borderLight);
     border-radius: 14px;
     padding: 14px;
