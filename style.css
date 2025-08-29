@@ -2,6 +2,8 @@
     --black: #352f36;
     --muted: #78766f;
     --shadow: #78766f77;
+    --shadow2: #00000044;
+    --highlight: #ffffff99;
     --bg: #faf9f1;
     --bgImage: url('images/pxArt.png');
     --card: rgba(248, 245, 239, 0.70);
@@ -20,7 +22,7 @@
     --crt-glow: rgb(27, 220, 200);
     --toc: rgba(248, 245, 239, 0.95);
     --thumb-shadow: -1px 2px 4px var(--shadow);
-    --thumb-shadow2: -1px 2px 3px var(--shadow);
+    --thumb-shadow2: -1px 1px 3px var(--shadow2);
   }
     
 
@@ -36,6 +38,8 @@
     --black: #e8e6ee;   /* body text becomes light */
     --muted: #a6a6b3;
     --shadow: #bbcbd933;
+    --shadow2: #00000099;
+    --highlight: #00000099;
     --light: #e7e9ec;
     --accent: #79d99b;
     --accent-light: #79d99b33;
@@ -48,7 +52,7 @@
     --crt-glow: rgb(255, 191, 0);
     --toc: rgba(4, 19, 38, 0.97);
     --thumb-shadow: 1px -2px 4px var(--bg);
-    --thumb-shadow2: 1px -2px 4px var(--bg);
+    --thumb-shadow2: 1px -2px 4px var(--highlight);
   }
   /* Switch sizing */
   .theme-toggle {
@@ -97,8 +101,10 @@
     position:absolute; 
     inset:0;
     border-radius:inherit;
+    /* background: radial-gradient(at 55% 150%, var(--card2) 35%, var(--shadow) 175%);*/
+    box-shadow: inset -2px var(--border-spacing) var(--inset-shadow-width) var(--shadow), 
+                inset 2px -3px 3px var(--highlight);
     background: radial-gradient(at 55% 150%, var(--card2) 35%, var(--shadow) 175%);
-    box-shadow: inset -2px var(--border-spacing) var(--inset-shadow-width) var(--shadow);
     /* FIX: add commas between properties */
   }
 
@@ -137,8 +143,8 @@
   /* pressed state (mouse/touch) */
   .theme-toggle label:active {
     --press: .90;                  /* shrink a bit */
-    --press-y: 1px;                /* nudge down */
-    --thumb-shadow: inset 0 2px 4px var(--shadow), var(--thumb-shadow2); /* look “pushed in” */
+    --press-y: 2px;                /* nudge down */
+    --thumb-shadow: inset 0 3px 4px var(--shadow2), var(--thumb-shadow2); /* look “pushed in” */
   }
 
   /* Icons inside the thumb */
