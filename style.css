@@ -447,7 +447,7 @@
     overflow: auto; 
     position: relative; /* allows absolute positioning inside */ 
     color: var(--crt-text);
-    text-shadow: var(--crt-glow);
+    text-shadow: 0 0 5px var(--crt-glow);
     margin: 6px 0;
   }
   .code::before { 
