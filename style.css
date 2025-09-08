@@ -303,7 +303,6 @@
     padding: 20px; 
     margin: 18px 0; 
     backdrop-filter: blur(12px);
-
   }
   section a:link {
     color: var(--link);
@@ -651,7 +650,7 @@
   }
   #tocToggle {
     border: 0px solid var(--borderLight); 
-    background: var(--card); 
+    background: transparent; 
     color: var(--muted);
     border-radius: 10px; 
     padding: 8px 16px; 
@@ -671,13 +670,14 @@
     background: var(--toc);
     border: 1px solid var(--borderLight);
     border-radius: 12px;
+    backdrop-filter: blur(12px);
     box-shadow: 0 8px 24px rgba(0,0,0,.32);
 
     /* animation without reflow */
     visibility: hidden;
     opacity: 0;
     transform: translateY(-4px);
-    transition: opacity .2s ease, transform .2s ease;
+    transition: opacity 300ms ease-in, transform 300ms ease-in;
     z-index: 1000;                  /* above header content */
 
     /* spacing */
@@ -708,6 +708,55 @@
     scroll-margin-top: 100px; 
   }
 
+  /* Floating TOC button */
+  .toc-fab {
+    position: fixed;
+    right: 20px;
+    top: 16px;
+    z-index: 1001;
+    display: none;              /* desktop default */
+    padding: 10px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--borderLight);
+    background: var(--card);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 20px rgba(0,0,0,.18);
+    color: var(--muted);
+    cursor:pointer;
+    
+  }
+
+  .toc-fab:hover {
+    padding: 10px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--accent-light);
+    background: var(--card);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 20px rgba(0,0,0,.20);
+    color: var(--link-visited);
+    cursor:pointer;
+  }
+
+  /* Global visibility for the mobile TOC, regardless of where it lives */
+
+  #tocList {
+    visibility: hidden;
+    padding: 8px;
+    opacity: 0;
+    transform: translateY(-4px);
+    pointer-events: none;
+    background: var(--toc);
+    border: 1px solid var(--borderLight);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.32);
+  }
+
+  #tocList[data-open="true"] {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
 
 
 
@@ -924,11 +973,43 @@
     header .header-inner {
       flex-wrap: nowrap;    
     }
+    .header-inner img {
+      display: none !important;
+    }
+    .toc-fab { 
+      display: inline-block;
+    }
+    .toc-fab[hidden] { 
+      display: none !important; 
+    }
+    .toc-mobile .toc {
+      position: fixed;
+      right: 12px;
+      top: auto;
+      left: auto;
+      width: clamp(260px, 90vw, 620px);
+      max-height: 70vh;
+      z-index: 1001;
+    }
+    #tocList.is-ported {
+      position: fixed;
+      right: 12px;
+      top: 64px;      /* sits above the FAB */
+      bottom: auto;
+      left: auto;
+      width: clamp(260px, 90vw, 620px);
+      max-height: 70vh;
+      overflow-y: auto;
+      z-index: 1001;
+    }
   }
 
   @media (max-width: 768px) {
     header .header-inner {
-      flex-wrap: wrap;    
+      flex-wrap: wrap; 
+    }
+    .header-actions #tocToggle {
+      padding: 0px;
     }
     .toc-mobile { 
       margin-left: 0px;
@@ -936,6 +1017,23 @@
     }
     .toc-mobile .toc {
       right: auto; 
+    }
+    #tocToggle {
+      font-size: 0.9em;
+    }
+    .toc-fab { 
+      left: 16px;
+      right: auto;
+    }
+    #tocList.is-ported {
+      right: auto;
+      top: 64px;      /* sits above the FAB */
+      bottom: auto;
+      left: 16px;
+      width: clamp(260px, 90vw, 620px);
+      max-height: 70vh;
+      overflow-y: auto;
+      z-index: 1001;
     }
     .page {
       width: 96%;
@@ -970,6 +1068,12 @@
     }
     header .header-inner {
       display: block;
+    }
+    header .title-block {
+      text-wrap: balance;
+    }
+    h1 {
+      font-size: 26px;
     }
     .callout { 
       border-left: 3px solid var(--accent); 
