@@ -202,110 +202,103 @@
       buildTOC($$('nav.toc'), headings);
       observeActive(headings);
 
-// --- Mobile TOC wiring (dock to header when visible; portal when not) ---
-const toggleBtn = document.getElementById('tocToggle');   // header button
-const mobileToc = document.getElementById('tocList');     // menu
-const fab       = document.getElementById('tocFab');      // floating button
-
-const BP = 1100; // keep in sync with CSS @media (max-width: 1100px)
-const mq = window.matchMedia(`(max-width: ${BP}px)`);
-const headerDock = toggleBtn ? toggleBtn.closest('.toc-mobile') : null;
-const originalParent = mobileToc ? mobileToc.parentElement : null;
-
-let headerInView = true;
-
-function ensureDock() {
-  if (!mobileToc || !originalParent) return;
-  const shouldPortal = mq.matches && !headerInView;
-
-  if (shouldPortal && mobileToc.parentElement !== document.body) {
-    document.body.appendChild(mobileToc);
-    mobileToc.classList.add('is-ported');   // fixed overlay CSS hook
-  } else if (!shouldPortal && mobileToc.parentElement === document.body) {
-    originalParent.appendChild(mobileToc);
-    mobileToc.classList.remove('is-ported');
-  }
-}
-
-// Observe whether the header mobile nav is on-screen
-if (headerDock) {
-  const io = new IntersectionObserver(([entry]) => {
-    headerInView = !!entry.isIntersecting;
-    ensureDock();
-    updateFabVisibility();
-  }, { root: null, threshold: 0 });
-  io.observe(headerDock);
-}
-
-mq.addEventListener('change', () => { ensureDock(); updateFabVisibility(); });
-
-// Closed on load
-if (mobileToc) mobileToc.setAttribute('data-open','false');
-if (toggleBtn) toggleBtn.setAttribute('aria-expanded','false');
-if (fab)       fab.setAttribute('aria-expanded','false');
-
-// Single source of truth for open/close
-function setTocOpen(open) {
-  if (!mobileToc) return;
-  mobileToc.setAttribute('data-open', String(open));
-  if (toggleBtn) toggleBtn.setAttribute('aria-expanded', String(open));
-  if (fab)       fab.setAttribute('aria-expanded', String(open));
-}
-
-// Header button
-if (toggleBtn && mobileToc) {
-  toggleBtn.addEventListener('click', () => {
-    const open = mobileToc.getAttribute('data-open') === 'true';
-    setTocOpen(!open);
-  });
-  // Close when a link is chosen
-  mobileToc.addEventListener('click', (e) => {
-    if (e.target.matches('a')) setTocOpen(false);
-  });
-}
-
-// FAB visibility = after scroll threshold AND header not visible
-const showAfter = 200; // tweak to taste
-function updateFabVisibility() {
-  if (!fab) return;
-  fab.hidden = headerInView || window.scrollY < showAfter;
-}
-
-// FAB toggle
-if (fab && mobileToc) {
-  updateFabVisibility();
-  window.addEventListener('scroll', updateFabVisibility, { passive: true });
-  fab.addEventListener('click', () => {
-    const open = mobileToc.getAttribute('data-open') === 'true';
-    setTocOpen(!open);
-  });
-}
-
-// Close on Escape
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && mobileToc && mobileToc.getAttribute('data-open') === 'true') {
-    setTocOpen(false);
-  }
-});
-
-// Get the button:
-const toTop = document.getElementById("toTop"); 
-const width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+      // --- Mobile TOC wiring (dock to header when visible; portal when not) ---
+      const toggleBtn = document.getElementById('tocToggle');   // header button
+      const mobileToc = document.getElementById('tocList');     // menu
+      const fab       = document.getElementById('tocFab');      // floating button FAB
+      const toTop     = document.getElementById('toTop');       // Back-to-top BTT
 
 
-// When the user scrolls down 20px from the top of the document, show the button
-window.onscroll = function() {scrollFunction()};
+      const BP = 1100; // keep in sync with CSS @media (max-width: 1100px)
+      const mq = window.matchMedia(`(max-width: ${BP}px)`);
+      const headerDock = toggleBtn ? toggleBtn.closest('.toc-mobile') : null;
+      const originalParent = mobileToc ? mobileToc.parentElement : null;
 
-function scrollFunction() {
-  if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200 && width <= 1100) {
-    toTop.style.display = "inline-block";
-  } else {
-    toTop.style.display = "none";
-  }
-}
+      let headerInView = true;
 
-// Initial dock
-ensureDock();
+      function ensureDock() {
+        if (!mobileToc || !originalParent) return;
+        const shouldPortal = mq.matches && !headerInView;
+
+        if (shouldPortal && mobileToc.parentElement !== document.body) {
+          document.body.appendChild(mobileToc);
+          mobileToc.classList.add('is-ported');   // fixed overlay CSS hook
+        } else if (!shouldPortal && mobileToc.parentElement === document.body) {
+          originalParent.appendChild(mobileToc);
+          mobileToc.classList.remove('is-ported');
+        }
+      }
+
+      // Observe whether the header mobile nav is on-screen
+      if (headerDock) {
+        const io = new IntersectionObserver(([entry]) => {
+          headerInView = !!entry.isIntersecting;
+          ensureDock();
+          updateFabVisibility();
+          updateToTopVisibility();
+        }, { root: null, threshold: 0 });
+        io.observe(headerDock);
+      }
+
+      mq.addEventListener('change', () => { ensureDock(); updateFabVisibility(); });
+
+      // Closed on load
+      if (mobileToc) mobileToc.setAttribute('data-open','false');
+      if (toggleBtn) toggleBtn.setAttribute('aria-expanded','false');
+      if (fab)       fab.setAttribute('aria-expanded','false');
+
+      // Single source of truth for open/close
+      function setTocOpen(open) {
+        if (!mobileToc) return;
+        mobileToc.setAttribute('data-open', String(open));
+        if (toggleBtn) toggleBtn.setAttribute('aria-expanded', String(open));
+        if (fab)       fab.setAttribute('aria-expanded', String(open));
+      }
+
+      // Header button
+      if (toggleBtn && mobileToc) {
+        toggleBtn.addEventListener('click', () => {
+          const open = mobileToc.getAttribute('data-open') === 'true';
+          setTocOpen(!open);
+        });
+        // Close when a link is chosen
+        mobileToc.addEventListener('click', (e) => {
+          if (e.target.matches('a')) setTocOpen(false);
+        });
+      }
+
+      // FAB and BTT visibility = after scroll threshold AND header not visible
+      const showAfter = 200; // tweak to taste
+      function updateFabVisibility() {
+        if (!fab) return;
+        fab.hidden = headerInView || window.scrollY < showAfter;
+      }
+      function updateToTopVisibility() {
+        if (!toTop) return;
+        const shouldShow = mq.matches && !headerInView && window.scrollY > showAfter;
+        toTop.hidden = !shouldShow;
+      }
+      window.addEventListener('scroll', updateToTopVisibility, { passive: true });
+      mq.addEventListener('change', updateToTopVisibility);
+      // FAB toggle
+      if (fab && mobileToc) {
+        updateFabVisibility();
+        window.addEventListener('scroll', updateFabVisibility, { passive: true });
+        fab.addEventListener('click', () => {
+          const open = mobileToc.getAttribute('data-open') === 'true';
+          setTocOpen(!open);
+        });
+      }
+
+      // Close on Escape
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && mobileToc && mobileToc.getAttribute('data-open') === 'true') {
+          setTocOpen(false);
+        }
+      });
+
+      // Initial dock
+      ensureDock();
 
     }
 

@@ -742,7 +742,7 @@
   }
   #toTop {
     position: fixed;
-    right: 130px;
+    right: 126px;
     top: 16px;
     z-index: 1001;
     display: none;              /* desktop default */
@@ -1013,10 +1013,10 @@
     .toc-fab[hidden] { 
       display: none !important; 
     }
-    .toTop { 
+    #toTop { 
       display: inline-block;
     }
-    .toTop[hidden] { 
+    #toTop[hidden] { 
       display: none !important; 
     }
     .toc-mobile .toc {
@@ -1063,7 +1063,7 @@
       right: auto;
     }
     #toTop { 
-      left: 126px;
+      left: 122px;
       right: auto;
     }
     #tocList.is-ported {
