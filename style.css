@@ -1013,6 +1013,12 @@
     .toc-fab[hidden] { 
       display: none !important; 
     }
+    .toTop { 
+      display: inline-block;
+    }
+    .toTop[hidden] { 
+      display: none !important; 
+    }
     .toc-mobile .toc {
       position: fixed;
       right: 12px;
