@@ -288,6 +288,20 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
+// Get the button:
+const toTop = document.getElementById("toTop");
+
+// When the user scrolls down 20px from the top of the document, show the button
+window.onscroll = function() {scrollFunction()};
+
+function scrollFunction() {
+  if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+    toTop.style.display = "inline-block";
+  } else {
+    toTop.style.display = "none";
+  }
+}
+
 // Initial dock
 ensureDock();
 

@@ -6,6 +6,8 @@
     --highlight: #ffffff99;
     --bg: #faf9f1;
     --bgImage: url('images/pxArt.png');
+    --button: rgba(248, 245, 239, 0.70);
+    --button-text: #355437;
     --card: rgba(248, 245, 239, 0.70);
     --card2: #f0ebde66;
     --callout: rgba(240, 235, 222, 0.53);
@@ -37,6 +39,8 @@
     --borderLight: #051c38;
     --borderDark: #1d324b;
     --black: #e8e6ee;   /* body text becomes light */
+    --button: #1d324bbb;
+    --button-text: #e8e6ee;
     --muted: #a6a6b3;
     --shadow: #bbcbd933;
     --shadow2: #00000099;
@@ -718,7 +722,7 @@
     padding: 10px 14px;
     border-radius: 999px;
     border: 1px solid var(--borderLight);
-    background: var(--card);
+    background: var(--button);
     backdrop-filter: blur(12px);
     box-shadow: 0 8px 20px rgba(0,0,0,.18);
     color: var(--muted);
@@ -730,10 +734,37 @@
     padding: 10px 14px;
     border-radius: 999px;
     border: 1px solid var(--accent-light);
-    background: var(--card);
+    background: var(--button);
     backdrop-filter: blur(12px);
     box-shadow: 0 8px 20px rgba(0,0,0,.20);
-    color: var(--link-visited);
+    color: var(--button-text);
+    cursor:pointer;
+  }
+  #toTop {
+    position: fixed;
+    right: 130px;
+    top: 16px;
+    z-index: 1001;
+    display: none;              /* desktop default */
+    padding: 9px 13px;
+    border-radius: 999px;
+    border: 1px solid var(--borderLight);
+    background: var(--button);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 20px rgba(0,0,0,.18);
+    color: var(--muted);
+    cursor:pointer;
+    font-size: 12px;
+    font-weight: bold;
+  }
+
+  #toTop:hover {
+    border-radius: 999px;
+    border: 1px solid var(--accent-light);
+    background: var(--button);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 20px rgba(0,0,0,.20);
+    color: var(--button-text);
     cursor:pointer;
   }
 
@@ -1023,6 +1054,10 @@
     }
     .toc-fab { 
       left: 16px;
+      right: auto;
+    }
+    #toTop { 
+      left: 126px;
       right: auto;
     }
     #tocList.is-ported {
